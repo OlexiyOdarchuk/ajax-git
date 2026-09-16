@@ -175,6 +175,35 @@ initialize_repository()
         info "Directory '$repo_dir' created."
 
         create_repository "$repo_dir" || return 1
+    else
+        if [[ ! -d "$repo_dir" ]]; then
+            error "'$repo_dir' exists and is not a directory."
+            return 1
+        fi
+
+        if is_git_repository "$repo_dir"; then
+            if [[ -n "$remote_url" ]]; then
+                info "'$repo_dir' is already a Git repository."
+                configure_repository "$repo_dir"
+                add_remote "$repo_dir" "$remote_url"
+                return $?
+            else
+                info "'$repo_dir' is already a Git repository."
+                info "No changes were made."
+                return 0
+            fi
+        fi
+
+        if is_directory_empty "$repo_dir"; then
+            info "Directory '$repo_dir' exists and is empty."
+
+            create_repository "$repo_dir" || return 1
+        else
+            error "Directory '$repo_dir' already contains files"
+            error "and is not a Git repository."
+            error "Operation cancelled to prevent data loss."
+            return 1
+        fi
     fi
 
     if [[ -n "$remote_url" ]]; then
