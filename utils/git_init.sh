@@ -134,6 +134,30 @@ create_repository()
     return 0
 }
 
+add_remote()
+{
+    local repo_dir="$1"
+    local remote_url="$2"
+
+    if git -C "$repo_dir" remote get-url origin >/dev/null 2>&1; then
+        local current_remote current_remote="$(git -C "$repo_dir" remote get-url origin)"
+
+        if [[ "$current_remote" == "$remote_url" ]]; then
+            info "Remote 'origin' is already configured."
+        else
+            info "Remote 'origin' already exists:"
+            info "      $current_remote"
+            info "Remote was not changed."
+        fi
+    else
+        git -C "$repo_dir" remote add origin "$remote_url" ||
+            return 1
+
+        info "Remote 'origin' added."
+    fi
+
+    return 0
+}
 
 # ============================
 # тут вже виконання буде внизу
@@ -156,5 +180,3 @@ fi
 if ! load_config; then
     exit 1
 fi
-
-create_repository "."
