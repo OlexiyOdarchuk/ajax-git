@@ -96,4 +96,65 @@ load_config()
     return 0
 }
 
-load_config
+is_git_repository()
+{
+    [[ -d "$1/.git" ]]
+}
+
+is_directory_empty()
+{
+    [[ -z "$(find "$1" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]]
+}
+
+configure_repository()
+{
+    local repo_dir="$1"
+
+    git -C "$repo_dir" config --local user.name "$USER_NAME"
+    git -C "$repo_dir" config --local user.email "$USER_EMAIL"
+    git -C "$repo_dir" config --local init.defaultBranch "$USER_BRANCH"
+
+    info "Git local configuration applied."
+}
+
+create_repository()
+{
+    local repo_dir="$1"
+
+    git -C "$repo_dir" init --initial-branch="$USER_BRANCH" ||
+        return 1
+
+    configure_repository "$repo_dir"
+
+    printf '# %s\n' "$(basename "$repo_dir")" > "$repo_dir/README.md"
+
+    info "README.md created."
+    info "Repository initialized in '$repo_dir'."
+
+    return 0
+}
+
+
+# ============================
+# тут вже виконання буде внизу
+# ============================
+
+
+if [[ -d ".git" ]]; then
+    error "Current directory is already a Git repository."
+    error "For safety, the script will not continue."
+    exit 1
+fi
+
+if [[ $# -gt 2 ]]; then
+    error "Invalid number of parameters: $#."
+    error "Expected 0, 1 or 2 parameters."
+    usage
+    exit 1
+fi
+
+if ! load_config; then
+    exit 1
+fi
+
+create_repository "."
