@@ -110,9 +110,9 @@ configure_repository()
 {
     local repo_dir="$1"
 
-    git -C "$repo_dir" config --local user.name "$USER_NAME"
-    git -C "$repo_dir" config --local user.email "$USER_EMAIL"
-    git -C "$repo_dir" config --local init.defaultBranch "$USER_BRANCH"
+    git -C "$repo_dir" config --local user.name "$USER_NAME" || return 1
+    git -C "$repo_dir" config --local user.email "$USER_EMAIL" || return 1
+    git -C "$repo_dir" config --local init.defaultBranch "$USER_BRANCH" || return 1
 
     info "Git local configuration applied."
 }
@@ -124,7 +124,7 @@ create_repository()
     git -C "$repo_dir" init --initial-branch="$USER_BRANCH" ||
         return 1
 
-    configure_repository "$repo_dir"
+    configure_repository "$repo_dir" || return 1
 
     printf '# %s\n' "$(basename "$repo_dir")" > "$repo_dir/README.md"
 
@@ -140,7 +140,8 @@ add_remote()
     local remote_url="$2"
 
     if git -C "$repo_dir" remote get-url origin >/dev/null 2>&1; then
-        local current_remote current_remote="$(git -C "$repo_dir" remote get-url origin)"
+        local current_remote
+        current_remote="$(git -C "$repo_dir" remote get-url origin)"
 
         if [[ "$current_remote" == "$remote_url" ]]; then
             info "Remote 'origin' is already configured."
@@ -157,6 +158,24 @@ add_remote()
     fi
 
     return 0
+}
+
+
+initialize_repository()
+{
+    local repo_dir="$1"
+    local remote_url="${2:-}"
+
+    if [[ ! -e "$repo_dir" ]]; then
+        mkdir -p "$repo_dir" || {
+            error "Cannot create directory '$repo_dir'."
+            return 1
+        }
+
+        info "Directory '$repo_dir' created."
+
+        create_repository "$repo_dir" || return 1
+    fi
 }
 
 # ============================
@@ -180,3 +199,16 @@ fi
 if ! load_config; then
     exit 1
 fi
+
+
+case "$#" in
+    0)
+        usage
+        ;;
+    1)
+        initialize_repository "$1"
+        ;;
+    2)
+        initialize_repository "$1" "$2"
+        ;;
+esac
