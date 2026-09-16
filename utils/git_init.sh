@@ -42,8 +42,48 @@ Description:
 EOF
 }
 
+create_config()
+{
+    echo "Configuration file '$CONFIG_FILE' was not found."
+    read -r -p "Create it now? [y/N]: " answer
+
+    case "$answer" in
+        y|Y|yes|YES)
+            echo
+            echo "Enter default Git configuration values."
+
+            read -r -p "User name: " USER_NAME
+            read -r -p "User email: " USER_EMAIL
+            read -r -p "Default branch [main]: " USER_BRANCH
+
+            if [[ -z "$USER_BRANCH" ]]; then
+                USER_BRANCH="main"
+            fi
+
+            cat > "$CONFIG_FILE" <<EOF
+USER_NAME="$USER_NAME"
+USER_EMAIL="$USER_EMAIL"
+USER_BRANCH="$USER_BRANCH"
+EOF
+
+            chmod 600 "$CONFIG_FILE"
+
+            info "Configuration saved to '$CONFIG_FILE'."
+            ;;
+        *)
+            info "Configuration was not created."
+            return 1
+            ;;
+    esac
+}
+
 load_config()
 {
+
+    if [[ ! -f "$CONFIG_FILE" ]]; then
+        create_config || return 1
+    fi
+
     source "$CONFIG_FILE"
 
     if [[ -z "${USER_NAME:-}" ||
@@ -53,7 +93,6 @@ load_config()
         error "Required variables: USER_NAME, USER_EMAIL, USER_BRANCH."
         return 1
     fi
-    info "All is good"
     return 0
 }
 
