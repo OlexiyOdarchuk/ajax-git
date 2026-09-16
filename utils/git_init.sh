@@ -176,6 +176,12 @@ initialize_repository()
 
         create_repository "$repo_dir" || return 1
     fi
+
+    if [[ -n "$remote_url" ]]; then
+        add_remote "$repo_dir" "$remote_url" || return 1
+    fi
+
+    return 0
 }
 
 # ============================
