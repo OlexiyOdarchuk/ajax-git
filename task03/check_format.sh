@@ -6,6 +6,11 @@ echo
 
 DIR=$1
 
+if [ -z "$DIR" ]; then
+    echo "Директорія не вказана"
+    exit 1
+fi
+
 if [ ! -d "$DIR" ]; then
       echo "Директорії $DIR не існує"
       exit 1
