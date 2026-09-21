@@ -1,0 +1,10 @@
+# dummy
+
+- `.clang-format` - з кореня репозиторія
+- `src/` - namei.c, dir.c, random.c, tty_io.c, core.c (з fs/ та drivers/)
+- `include/` - fs.h, sched.h, mm.h (з include/linux/)
+
+## Журнал операцій
+
+- TASK 03 : add dummy project
+  Завантажив файли з ядра, форматування не міняв
