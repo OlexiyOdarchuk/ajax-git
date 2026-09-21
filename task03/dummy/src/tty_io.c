@@ -816,7 +816,7 @@ static void tty_update_time(struct tty_struct *tty, bool mtime)
 	list_for_each_entry(priv, &tty->tty_files, list) {
 		struct inode *inode = file_inode(priv->file);
 		struct timespec64 time = mtime ? inode_get_mtime(inode) :
-						       inode_get_atime(inode);
+						 inode_get_atime(inode);
 
 		/*
 		 * We only care if the two values differ in anything other than the
@@ -1279,7 +1279,7 @@ static int tty_driver_install_tty(struct tty_driver *driver,
 				  struct tty_struct *tty)
 {
 	return driver->ops->install ? driver->ops->install(driver, tty) :
-					    tty_standard_install(driver, tty);
+				      tty_standard_install(driver, tty);
 }
 
 /**
@@ -2855,8 +2855,8 @@ static int compat_tty_tiocgserial(struct tty_struct *tty,
 	if (!err) {
 		memcpy(&v32, &v, offsetof(struct serial_struct32, iomem_base));
 		v32.iomem_base = (unsigned long)v.iomem_base >> 32 ?
-					       0xfffffff :
-					       ptr_to_compat(v.iomem_base);
+					 0xfffffff :
+					 ptr_to_compat(v.iomem_base);
 		v32.iomem_reg_shift = v.iomem_reg_shift;
 		v32.port_high = v.port_high;
 		if (copy_to_user(ss, &v32, sizeof(v32)))

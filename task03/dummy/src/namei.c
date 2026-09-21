@@ -737,7 +737,7 @@ struct nameidata {
 		struct delayed_call done;
 		const char *name;
 		unsigned seq;
-	} * stack, internal[EMBEDDED_LEVELS];
+	} *stack, internal[EMBEDDED_LEVELS];
 	struct filename *name;
 	const char *pathname;
 	struct nameidata *saved;
@@ -6190,7 +6190,7 @@ int vfs_rename(struct renamedata *rd)
 	}
 	error = try_break_deleg(old_dir,
 				old_dir == new_dir ? LEASE_BREAK_DIR_RENAME :
-							   LEASE_BREAK_DIR_DELETE,
+						     LEASE_BREAK_DIR_DELETE,
 				delegated_inode);
 	if (error)
 		goto out;

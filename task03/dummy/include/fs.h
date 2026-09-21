@@ -368,9 +368,7 @@ struct readahead_control;
 		{ IOCB_WAITQ, "WAITQ" }, { IOCB_NOIO, "NOIO" },               \
 		{ IOCB_ALLOC_CACHE, "ALLOC_CACHE" },                          \
 		{ IOCB_AIO_RW, "AIO_RW" },                                    \
-	{                                                                     \
-		IOCB_HAS_METADATA, "AIO_HAS_METADATA"                         \
-	}
+		{ IOCB_HAS_METADATA, "AIO_HAS_METADATA" }
 
 struct kiocb {
 	struct file *ki_filp;
@@ -564,7 +562,7 @@ static inline int mapping_writably_mapped(const struct address_space *mapping)
 static inline int mapping_map_writable(struct address_space *mapping)
 {
 	return atomic_inc_unless_negative(&mapping->i_mmap_writable) ? 0 :
-									     -EPERM;
+								       -EPERM;
 }
 
 static inline void mapping_unmap_writable(struct address_space *mapping)
@@ -575,7 +573,7 @@ static inline void mapping_unmap_writable(struct address_space *mapping)
 static inline int mapping_deny_writable(struct address_space *mapping)
 {
 	return atomic_dec_unless_positive(&mapping->i_mmap_writable) ? 0 :
-									     -EBUSY;
+								       -EBUSY;
 }
 
 static inline void mapping_allow_writable(struct address_space *mapping)
@@ -2351,7 +2349,7 @@ struct super_block *sget_dev(struct fs_context *fc, dev_t dev);
 	({                                                              \
 		const struct file_operations *_fops = (fops);           \
 		(((_fops) && try_module_get((_fops)->owner) ? (_fops) : \
-								    NULL));   \
+							      NULL));   \
 	})
 
 #define fops_put(fops)                                        \
@@ -3021,7 +3019,7 @@ int insert_inode_locked(struct inode *inode);
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 void lockdep_annotate_inode_mutex_key(struct inode *inode);
 #else
-static inline void lockdep_annotate_inode_mutex_key(struct inode *inode){};
+static inline void lockdep_annotate_inode_mutex_key(struct inode *inode) {};
 #endif
 void unlock_new_inode(struct inode *inode);
 void discard_new_inode(struct inode *inode);
@@ -3563,7 +3561,7 @@ void simple_transaction_set(struct file *file, size_t n);
 		.release = simple_attr_release,                            \
 		.read = simple_attr_read,                                  \
 		.write = (__is_signed) ? simple_attr_write_signed :        \
-					       simple_attr_write,                \
+					 simple_attr_write,                \
 		.llseek = generic_file_llseek,                             \
 	}
 
@@ -3594,7 +3592,7 @@ int __init list_bdev_fs_names(char *buf, size_t size);
 
 #define __FMODE_EXEC ((__force int)FMODE_EXEC)
 
-#define ACC_MODE(x) ("\004\002\006\006"[(x)&O_ACCMODE])
+#define ACC_MODE(x) ("\004\002\006\006"[(x) & O_ACCMODE])
 #define OPEN_FMODE(flag) ((__force fmode_t)((flag + 1) & O_ACCMODE))
 
 static inline bool is_sxid(umode_t mode)

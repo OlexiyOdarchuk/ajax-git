@@ -835,8 +835,7 @@ struct task_ipi_mask {
 	};
 };
 #else
-struct task_ipi_mask {
-};
+struct task_ipi_mask {};
 #endif
 
 struct task_struct {
@@ -2495,8 +2494,7 @@ struct sched_cache_stat {
 
 #else
 
-struct sched_cache_stat {
-};
+struct sched_cache_stat {};
 
 #endif
 

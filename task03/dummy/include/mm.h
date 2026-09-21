@@ -104,7 +104,7 @@ extern int mmap_rnd_compat_bits __read_mostly;
 #ifdef MAX_PHYSMEM_BITS
 #define DIRECT_MAP_PHYSMEM_END ((1ULL << MAX_PHYSMEM_BITS) - 1)
 #else
-#define DIRECT_MAP_PHYSMEM_END (((phys_addr_t)-1) & ~(1ULL << 63))
+#define DIRECT_MAP_PHYSMEM_END (((phys_addr_t) - 1) & ~(1ULL << 63))
 #endif
 #endif
 
@@ -555,7 +555,7 @@ enum {
 
 #define TASK_EXEC_BIT                                                \
 	((current->personality & READ_IMPLIES_EXEC) ? VMA_EXEC_BIT : \
-							    VMA_READ_BIT)
+						      VMA_READ_BIT)
 
 /* Common data flag combinations */
 #define VMA_DATA_FLAGS_TSK_EXEC                                  \
@@ -745,9 +745,7 @@ static inline bool fault_flag_allow_retry_first(enum fault_flag flags)
 		{ FAULT_FLAG_REMOTE, "REMOTE" },                            \
 		{ FAULT_FLAG_INSTRUCTION, "INSTRUCTION" },                  \
 		{ FAULT_FLAG_INTERRUPTIBLE, "INTERRUPTIBLE" },              \
-	{                                                                   \
-		FAULT_FLAG_VMA_LOCK, "VMA_LOCK"                             \
-	}
+		{ FAULT_FLAG_VMA_LOCK, "VMA_LOCK" }
 
 /*
  * vm_fault is filled by the pagefault handler and passed to the vma's
@@ -1770,10 +1768,7 @@ static inline bool vma_is_anon_shmem(const struct vm_area_struct *vma)
 int vma_is_stack_for_current(const struct vm_area_struct *vma);
 
 /* flush_tlb_range() takes a vma, not a mm, and can care about flags */
-#define TLB_FLUSH_VMA(mm, flags)                   \
-	{                                          \
-		.vm_mm = (mm), .vm_flags = (flags) \
-	}
+#define TLB_FLUSH_VMA(mm, flags) { .vm_mm = (mm), .vm_flags = (flags) }
 
 struct mmu_gather;
 struct inode;
@@ -3752,24 +3747,24 @@ static inline p4d_t *p4d_alloc(struct mm_struct *mm, pgd_t *pgd,
 			       unsigned long address)
 {
 	return (unlikely(pgd_none(*pgd)) && __p4d_alloc(mm, pgd, address)) ?
-			     NULL :
-			     p4d_offset(pgd, address);
+		       NULL :
+		       p4d_offset(pgd, address);
 }
 
 static inline pud_t *pud_alloc(struct mm_struct *mm, p4d_t *p4d,
 			       unsigned long address)
 {
 	return (unlikely(p4d_none(*p4d)) && __pud_alloc(mm, p4d, address)) ?
-			     NULL :
-			     pud_offset(p4d, address);
+		       NULL :
+		       pud_offset(p4d, address);
 }
 
 static inline pmd_t *pmd_alloc(struct mm_struct *mm, pud_t *pud,
 			       unsigned long address)
 {
 	return (unlikely(pud_none(*pud)) && __pmd_alloc(mm, pud, address)) ?
-			     NULL :
-			     pmd_offset(pud, address);
+		       NULL :
+		       pmd_offset(pud, address);
 }
 #endif /* CONFIG_MMU */
 
@@ -4034,12 +4029,12 @@ pte_t *pte_offset_map_rw_nolock(struct mm_struct *mm, pmd_t *pmd,
 
 #define pte_alloc_map_lock(mm, pmd, address, ptlp) \
 	(pte_alloc(mm, pmd) ? NULL :               \
-				    pte_offset_map_lock(mm, pmd, address, ptlp))
+			      pte_offset_map_lock(mm, pmd, address, ptlp))
 
 #define pte_alloc_kernel(pmd, address)                             \
 	((unlikely(pmd_none(*(pmd))) && __pte_alloc_kernel(pmd)) ? \
-		       NULL :                                            \
-		       pte_offset_kernel(pmd, address))
+		 NULL :                                            \
+		 pte_offset_kernel(pmd, address))
 
 #if defined(CONFIG_SPLIT_PMD_PTLOCKS)
 
@@ -5599,8 +5594,8 @@ int arch_lock_shadow_stack_status(struct task_struct *t, unsigned long status);
 	((__builtin_constant_p(PAGE_OFFSET) &&                      \
 	  PAGE_OFFSET >= PP_DMA_INDEX_MIN_OFFSET &&                 \
 	  !(PAGE_OFFSET & (PP_DMA_INDEX_MIN_OFFSET - 1))) ?         \
-		       MIN(32, __ffs(PAGE_OFFSET) - PP_DMA_INDEX_SHIFT) : \
-		       0)
+		 MIN(32, __ffs(PAGE_OFFSET) - PP_DMA_INDEX_SHIFT) : \
+		 0)
 
 #endif
 

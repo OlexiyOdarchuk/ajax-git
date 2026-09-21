@@ -99,7 +99,7 @@ int __ext4_check_dir_entry(const char *function, unsigned int line,
 		error_msg = "directory entry overrun";
 	else if (unlikely(next_offset >
 				  size - ext4_dir_rec_len(1, has_csum ? NULL :
-									      dir) &&
+									dir) &&
 			  next_offset != size))
 		error_msg = "directory entry too close to block end";
 	else if (unlikely(
@@ -240,8 +240,8 @@ static int ext4_readdir(struct file *file, struct dir_context *ctx)
 			for (i = 0;
 			     i <= sb->s_blocksize - ext4_dir_rec_len(
 							    1, has_csum ?
-									     NULL :
-									     inode) &&
+								       NULL :
+								       inode) &&
 			     i < offset;) {
 				de = (struct ext4_dir_entry_2 *)(bh->b_data +
 								 i);
@@ -267,7 +267,7 @@ static int ext4_readdir(struct file *file, struct dir_context *ctx)
 			     offset > sb->s_blocksize -
 					      ext4_dir_rec_len(
 						      1, has_csum ? NULL :
-									  inode))) {
+								    inode))) {
 			EXT4_ERROR_FILE(
 				file, bh->b_blocknr,
 				"bad entry in directory: %s - offset=%u, size=%lu",
