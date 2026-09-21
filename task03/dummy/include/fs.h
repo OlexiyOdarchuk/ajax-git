@@ -368,9 +368,8 @@ struct readahead_control;
       {IOCB_ATOMIC, "ATOMIC"}, {IOCB_DONTCACHE, "DONTCACHE"},            \
       {IOCB_EVENTFD, "EVENTFD"}, {IOCB_DIRECT, "DIRECT"},                \
       {IOCB_WRITE, "WRITE"}, {IOCB_WAITQ, "WAITQ"}, {IOCB_NOIO, "NOIO"}, \
-      {IOCB_ALLOC_CACHE, "ALLOC_CACHE"}, {IOCB_AIO_RW, "AIO_RW"}, {      \
-    IOCB_HAS_METADATA, "AIO_HAS_METADATA"                                \
-  }
+      {IOCB_ALLOC_CACHE, "ALLOC_CACHE"}, {IOCB_AIO_RW, "AIO_RW"},        \
+      {IOCB_HAS_METADATA, "AIO_HAS_METADATA"}
 
 struct kiocb {
   struct file* ki_filp;
@@ -3014,7 +3013,7 @@ int insert_inode_locked(struct inode* inode);
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 void lockdep_annotate_inode_mutex_key(struct inode* inode);
 #else
-static inline void lockdep_annotate_inode_mutex_key(struct inode* inode){};
+static inline void lockdep_annotate_inode_mutex_key(struct inode* inode) {};
 #endif
 void unlock_new_inode(struct inode* inode);
 void discard_new_inode(struct inode* inode);
@@ -3644,7 +3643,7 @@ int __init list_bdev_fs_names(char* buf, size_t size);
 
 #define __FMODE_EXEC ((__force int)FMODE_EXEC)
 
-#define ACC_MODE(x) ("\004\002\006\006"[(x)&O_ACCMODE])
+#define ACC_MODE(x) ("\004\002\006\006"[(x) & O_ACCMODE])
 #define OPEN_FMODE(flag) ((__force fmode_t)((flag + 1) & O_ACCMODE))
 
 static inline bool is_sxid(umode_t mode) {

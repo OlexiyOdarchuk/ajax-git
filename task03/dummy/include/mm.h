@@ -100,7 +100,7 @@ extern int mmap_rnd_compat_bits __read_mostly;
 #ifdef MAX_PHYSMEM_BITS
 #define DIRECT_MAP_PHYSMEM_END ((1ULL << MAX_PHYSMEM_BITS) - 1)
 #else
-#define DIRECT_MAP_PHYSMEM_END (((phys_addr_t)-1) & ~(1ULL << 63))
+#define DIRECT_MAP_PHYSMEM_END (((phys_addr_t) - 1) & ~(1ULL << 63))
 #endif
 #endif
 
@@ -728,9 +728,8 @@ static inline bool fault_flag_allow_retry_first(enum fault_flag flags) {
       {FAULT_FLAG_KILLABLE, "KILLABLE"}, {FAULT_FLAG_TRIED, "TRIED"}, \
       {FAULT_FLAG_USER, "USER"}, {FAULT_FLAG_REMOTE, "REMOTE"},       \
       {FAULT_FLAG_INSTRUCTION, "INSTRUCTION"},                        \
-      {FAULT_FLAG_INTERRUPTIBLE, "INTERRUPTIBLE"}, {                  \
-    FAULT_FLAG_VMA_LOCK, "VMA_LOCK"                                   \
-  }
+      {FAULT_FLAG_INTERRUPTIBLE, "INTERRUPTIBLE"},                    \
+      {FAULT_FLAG_VMA_LOCK, "VMA_LOCK"}
 
 /*
  * vm_fault is filled by the pagefault handler and passed to the vma's
@@ -1690,8 +1689,7 @@ static inline bool vma_is_anon_shmem(const struct vm_area_struct* vma) {
 int vma_is_stack_for_current(const struct vm_area_struct* vma);
 
 /* flush_tlb_range() takes a vma, not a mm, and can care about flags */
-#define TLB_FLUSH_VMA(mm, flags) \
-  { .vm_mm = (mm), .vm_flags = (flags) }
+#define TLB_FLUSH_VMA(mm, flags) {.vm_mm = (mm), .vm_flags = (flags)}
 
 struct mmu_gather;
 struct inode;

@@ -714,7 +714,7 @@ struct nameidata {
     struct delayed_call done;
     const char* name;
     unsigned seq;
-  } * stack, internal[EMBEDDED_LEVELS];
+  } *stack, internal[EMBEDDED_LEVELS];
   struct filename* name;
   const char* pathname;
   struct nameidata* saved;
