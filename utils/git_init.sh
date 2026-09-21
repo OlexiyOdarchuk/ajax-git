@@ -98,7 +98,7 @@ load_config()
 
 is_git_repository()
 {
-    [[ -d "$1/.git" ]]
+    git -C "$1" rev-parse --is-inside-work-tree >/dev/null 2>&1
 }
 
 is_directory_empty()
@@ -218,7 +218,7 @@ initialize_repository()
 # ============================
 
 
-if [[ -d ".git" ]]; then
+if is_git_repository "."; then
     error "Current directory is already a Git repository."
     error "For safety, the script will not continue."
     exit 1
