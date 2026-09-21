@@ -154,7 +154,70 @@ $ git diff --shortstat
 
 ## Різниця між Chromium-конфігами версій
 
-TODO
+Зняв повний дамп стилю Chromium обома версіями:
+
+```console
+$ clang-format-11 --style=Chromium --dump-config > chromium-11.clang-format
+$ clang-format-22 --style=Chromium --dump-config > chromium-22.clang-format
+$ wc -l chromium-11.clang-format chromium-22.clang-format
+ 182 chromium-11.clang-format
+ 358 chromium-22.clang-format
+$ diff -u chromium-11.clang-format chromium-22.clang-format | wc -l
+377
+```
+
+Сам стиль Chromium не змінювався - змінився конфіг, яким він описується.
+Кількість опцій верхнього рівня виросла зі 109 до 177, тобто за 11 релізів
+додалось 68 нових.
+
+Порівняння списків опцій дало 18 імен, які є в обох дампах, але виглядають
+по-різному. Після звірки кожного через `grep` виявилось, що реально змінились
+11, а решта 7 потрапили в список через те, що `diff` зсуває блоки по контексту.
+`IndentCaseLabels`, `IndentExternBlock`, `BreakInheritanceList` та інші мають
+однакові значення в обох версіях.
+
+Справжні зміни розпадаються на три типи.
+
+Булеве значення стало переліком:
+
+```
+11: ReflowComments:       true        22: ReflowComments:       Always
+11: SpacesInAngles:       false       22: SpacesInAngles:       Never
+11: BinPackParameters:    false       22: BinPackParameters:    OnePerLine
+11: SortUsingDeclarations: true       22: SortUsingDeclarations: LexicographicNumeric
+```
+
+Булеве значення стало вкладеною структурою:
+
+```
+11: SortIncludes: true          22: SortIncludes:
+                                      Enabled:         true
+                                      IgnoreCase:      false
+                                      IgnoreExtension: false
+```
+
+Так само `AlignConsecutiveAssignments`, `AlignConsecutiveDeclarations`,
+`AlignConsecutiveMacros`, `AlignConsecutiveBitFields`, `AlignTrailingComments`.
+
+І зворотний випадок - перелік став булевим, а сама опція розпалась на десять
+дрібніших:
+
+```
+11: AlignAfterOpenBracket: Align      22: AlignAfterOpenBracket: true
+                                        + BreakAfterOpenBracketFunction
+                                        + BreakAfterOpenBracketIf
+                                        + BreakBeforeCloseBracketFunction
+                                        ... разом 10 нових опцій
+```
+
+Назад сумісність при цьому збережена: версія 22 читає і `SortIncludes: true`,
+і `AlignAfterOpenBracket: Align` без помилок. Тобто старий конфіг на новій
+версії працює.
+
+Головний висновок розділу: конфіг не просто обростає новими опціями, у нього
+міняється структура запису. Опція, яка була одним рядком, стає блоком з
+кількох. Це означає, що конфіг, згенерований новою версією, стара прочитати
+вже не зможе - перевірка цього далі.
 
 ## Перехід на інший формат
 
