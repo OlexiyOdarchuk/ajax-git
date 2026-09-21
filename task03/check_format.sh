@@ -6,6 +6,16 @@ echo
 
 DIR=$1
 
+if [ -t 1 ]; then
+      GREEN='\033[0;32m'
+      RED='\033[0;31m'
+      RESET='\033[0m'
+else
+      GREEN=''
+      RED=''
+      RESET=''
+fi
+
 if [ -z "$DIR" ]; then
     echo "Директорія не вказана"
     exit 1
@@ -29,9 +39,9 @@ do
       do
             if clang-format-$VER --style=file --dry-run -Werror "$FILE" 2>/dev/null
             then
-                    echo "OK   $FILE"
+                    printf "${GREEN}[ OK ]${RESET} %s\n" "$FILE"
             else
-                    echo "FAIL $FILE"
+                    printf "${RED}[FAIL]${RESET} %s\n" "$FILE"
                     BAD=$((BAD + 1))
             fi
       done
