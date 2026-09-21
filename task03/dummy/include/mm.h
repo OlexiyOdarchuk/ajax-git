@@ -72,7 +72,7 @@ static inline void totalram_pages_add(long count)
 	atomic_long_add(count, &_totalram_pages);
 }
 
-extern void * high_memory;
+extern void *high_memory;
 
 /*
  * Convert between pages and MB
@@ -81,7 +81,7 @@ extern void * high_memory;
  * So (20 - PAGE_SHIFT) converts between pages and MB
  */
 #define PAGES_TO_MB(pages) ((pages) >> (20 - PAGE_SHIFT))
-#define MB_TO_PAGES(mb)    ((mb) << (20 - PAGE_SHIFT))
+#define MB_TO_PAGES(mb) ((mb) << (20 - PAGE_SHIFT))
 
 #ifdef CONFIG_SYSCTL
 extern int sysctl_legacy_va_layout;
@@ -101,11 +101,11 @@ extern int mmap_rnd_compat_bits __read_mostly;
 #endif
 
 #ifndef DIRECT_MAP_PHYSMEM_END
-# ifdef MAX_PHYSMEM_BITS
-# define DIRECT_MAP_PHYSMEM_END	((1ULL << MAX_PHYSMEM_BITS) - 1)
-# else
-# define DIRECT_MAP_PHYSMEM_END	(((phys_addr_t)-1)&~(1ULL<<63))
-# endif
+#ifdef MAX_PHYSMEM_BITS
+#define DIRECT_MAP_PHYSMEM_END ((1ULL << MAX_PHYSMEM_BITS) - 1)
+#else
+#define DIRECT_MAP_PHYSMEM_END (((phys_addr_t)-1) & ~(1ULL << 63))
+#endif
 #endif
 
 #define INVALID_PHYS_ADDR (~(phys_addr_t)0)
@@ -114,15 +114,15 @@ extern int mmap_rnd_compat_bits __read_mostly;
 #include <asm/processor.h>
 
 #ifndef __pa_symbol
-#define __pa_symbol(x)  __pa(RELOC_HIDE((unsigned long)(x), 0))
+#define __pa_symbol(x) __pa(RELOC_HIDE((unsigned long)(x), 0))
 #endif
 
 #ifndef page_to_virt
-#define page_to_virt(x)	__va(PFN_PHYS(page_to_pfn(x)))
+#define page_to_virt(x) __va(PFN_PHYS(page_to_pfn(x)))
 #endif
 
 #ifndef lm_alias
-#define lm_alias(x)	__va(__pa_symbol(x))
+#define lm_alias(x) __va(__pa_symbol(x))
 #endif
 
 /*
@@ -133,7 +133,7 @@ extern int mmap_rnd_compat_bits __read_mostly;
  * related to the physical page in case of virtualization.
  */
 #ifndef mm_forbids_zeropage
-#define mm_forbids_zeropage(X)	(0)
+#define mm_forbids_zeropage(X) (0)
 #endif
 
 /*
@@ -149,12 +149,12 @@ extern int mmap_rnd_compat_bits __read_mostly;
  * combine write statements if they are both assignments and can be reordered,
  * this can result in several of the writes here being dropped.
  */
-#define	mm_zero_struct_page(pp) __mm_zero_struct_page(pp)
+#define mm_zero_struct_page(pp) __mm_zero_struct_page(pp)
 static inline void __mm_zero_struct_page(struct page *page)
 {
 	unsigned long *_pp = (void *)page;
 
-	 /* Check that struct page is either 56, 64, 72, 80, 88 or 96 bytes */
+	/* Check that struct page is either 56, 64, 72, 80, 88 or 96 bytes */
 	BUILD_BUG_ON(sizeof(struct page) & 7);
 	BUILD_BUG_ON(sizeof(struct page) < 56);
 	BUILD_BUG_ON(sizeof(struct page) > 96);
@@ -186,7 +186,7 @@ static inline void __mm_zero_struct_page(struct page *page)
 	}
 }
 #else
-#define mm_zero_struct_page(pp)  ((void)memset((pp), 0, sizeof(struct page)))
+#define mm_zero_struct_page(pp) ((void)memset((pp), 0, sizeof(struct page)))
 #endif
 
 /*
@@ -205,8 +205,8 @@ static inline void __mm_zero_struct_page(struct page *page)
  * not a hard limit any more. Although some userspace tools can be surprised by
  * that.
  */
-#define MAPCOUNT_ELF_CORE_MARGIN	(5)
-#define DEFAULT_MAX_MAP_COUNT	(USHRT_MAX - MAPCOUNT_ELF_CORE_MARGIN)
+#define MAPCOUNT_ELF_CORE_MARGIN (5)
+#define DEFAULT_MAX_MAP_COUNT (USHRT_MAX - MAPCOUNT_ELF_CORE_MARGIN)
 
 extern unsigned long sysctl_user_reserve_kbytes;
 extern unsigned long sysctl_admin_reserve_kbytes;
@@ -215,7 +215,7 @@ extern unsigned long sysctl_admin_reserve_kbytes;
 bool page_range_contiguous(const struct page *page, unsigned long nr_pages);
 #else
 static inline bool page_range_contiguous(const struct page *page,
-		unsigned long nr_pages)
+					 unsigned long nr_pages)
 {
 	return true;
 }
@@ -228,7 +228,7 @@ static inline bool page_range_contiguous(const struct page *page,
 #define PAGE_ALIGN_DOWN(addr) ALIGN_DOWN(addr, PAGE_SIZE)
 
 /* test whether an address (unsigned long or pointer) is aligned to PAGE_SIZE */
-#define PAGE_ALIGNED(addr)	IS_ALIGNED((unsigned long)(addr), PAGE_SIZE)
+#define PAGE_ALIGNED(addr) IS_ALIGNED((unsigned long)(addr), PAGE_SIZE)
 
 /**
  * folio_page_idx - Return the number of a page in a folio.
@@ -239,7 +239,7 @@ static inline bool page_range_contiguous(const struct page *page,
  * The returned number is relative to the start of the folio.
  */
 static inline unsigned long folio_page_idx(const struct folio *folio,
-		const struct page *page)
+					   const struct page *page)
 {
 	return page - &folio->page;
 }
@@ -249,8 +249,8 @@ static inline struct folio *lru_to_folio(struct list_head *head)
 	return list_entry((head)->prev, struct folio, lru);
 }
 
-void setup_initial_init_mm(void *start_code, void *end_code,
-			   void *end_data, void *brk);
+void setup_initial_init_mm(void *start_code, void *end_code, void *end_data,
+			   void *brk);
 
 /*
  * Linux kernel virtual memory manager primitives.
@@ -277,7 +277,7 @@ extern unsigned int kobjsize(const void *objp);
  * When changing, update also include/trace/events/mmflags.h
  */
 
-#define VM_NONE		0x00000000
+#define VM_NONE 0x00000000
 
 /**
  * typedef vma_flag_t - specifies an individual VMA flag by bit number.
@@ -288,22 +288,22 @@ extern unsigned int kobjsize(const void *objp);
 typedef int __bitwise vma_flag_t;
 
 #define DECLARE_VMA_BIT(name, bitnum) \
-	VMA_ ## name ## _BIT = ((__force vma_flag_t)bitnum)
+	VMA_##name##_BIT = ((__force vma_flag_t)bitnum)
 #define DECLARE_VMA_BIT_ALIAS(name, aliased) \
-	VMA_ ## name ## _BIT = (VMA_ ## aliased ## _BIT)
+	VMA_##name##_BIT = (VMA_##aliased##_BIT)
 enum {
 	DECLARE_VMA_BIT(READ, 0),
 	DECLARE_VMA_BIT(WRITE, 1),
 	DECLARE_VMA_BIT(EXEC, 2),
 	DECLARE_VMA_BIT(SHARED, 3),
 	/* mprotect() hardcodes VM_MAYREAD >> 4 == VM_READ, and so for r/w/x bits. */
-	DECLARE_VMA_BIT(MAYREAD, 4),	/* limits for mprotect() etc. */
+	DECLARE_VMA_BIT(MAYREAD, 4), /* limits for mprotect() etc. */
 	DECLARE_VMA_BIT(MAYWRITE, 5),
 	DECLARE_VMA_BIT(MAYEXEC, 6),
 	DECLARE_VMA_BIT(MAYSHARE, 7),
-	DECLARE_VMA_BIT(GROWSDOWN, 8),	/* general info on the segment */
+	DECLARE_VMA_BIT(GROWSDOWN, 8), /* general info on the segment */
 #ifdef CONFIG_MMU
-	DECLARE_VMA_BIT(UFFD_MISSING, 9),/* missing pages tracking */
+	DECLARE_VMA_BIT(UFFD_MISSING, 9), /* missing pages tracking */
 #else
 	/* nommu: R/O MAP_PRIVATE mapping that might overlay a file mapping */
 	DECLARE_VMA_BIT(MAYOVERLAY, 9),
@@ -311,26 +311,29 @@ enum {
 	/* Page-ranges managed without "struct page", just pure PFN */
 	DECLARE_VMA_BIT(PFNMAP, 10),
 	DECLARE_VMA_BIT(MAYBE_GUARD, 11),
-	DECLARE_VMA_BIT(UFFD_WP, 12),	/* wrprotect pages tracking */
+	DECLARE_VMA_BIT(UFFD_WP, 12), /* wrprotect pages tracking */
 	DECLARE_VMA_BIT(LOCKED, 13),
-	DECLARE_VMA_BIT(IO, 14),	/* Memory mapped I/O or similar */
-	DECLARE_VMA_BIT(SEQ_READ, 15),	/* App will access data sequentially */
-	DECLARE_VMA_BIT(RAND_READ, 16),	/* App will not benefit from clustered reads */
-	DECLARE_VMA_BIT(DONTCOPY, 17),	/* Do not copy this vma on fork */
-	DECLARE_VMA_BIT(DONTEXPAND, 18),/* Cannot expand with mremap() */
-	DECLARE_VMA_BIT(LOCKONFAULT, 19),/* Lock pages covered when faulted in */
-	DECLARE_VMA_BIT(ACCOUNT, 20),	/* Is a VM accounted object */
-	DECLARE_VMA_BIT(NORESERVE, 21),	/* should the VM suppress accounting */
-	DECLARE_VMA_BIT(HUGETLB, 22),	/* Huge TLB Page VM */
-	DECLARE_VMA_BIT(SYNC, 23),	/* Synchronous page faults */
-	DECLARE_VMA_BIT(ARCH_1, 24),	/* Architecture-specific flag */
-	DECLARE_VMA_BIT(WIPEONFORK, 25),/* Wipe VMA contents in child. */
-	DECLARE_VMA_BIT(DONTDUMP, 26),	/* Do not include in the core dump */
-	DECLARE_VMA_BIT(SOFTDIRTY, 27),	/* NOT soft dirty clean area */
-	DECLARE_VMA_BIT(MIXEDMAP, 28),	/* Can contain struct page and pure PFN pages */
-	DECLARE_VMA_BIT(HUGEPAGE, 29),	/* MADV_HUGEPAGE marked this vma */
-	DECLARE_VMA_BIT(NOHUGEPAGE, 30),/* MADV_NOHUGEPAGE marked this vma */
-	DECLARE_VMA_BIT(MERGEABLE, 31),	/* KSM may merge identical pages */
+	DECLARE_VMA_BIT(IO, 14), /* Memory mapped I/O or similar */
+	DECLARE_VMA_BIT(SEQ_READ, 15), /* App will access data sequentially */
+	DECLARE_VMA_BIT(RAND_READ,
+			16), /* App will not benefit from clustered reads */
+	DECLARE_VMA_BIT(DONTCOPY, 17), /* Do not copy this vma on fork */
+	DECLARE_VMA_BIT(DONTEXPAND, 18), /* Cannot expand with mremap() */
+	DECLARE_VMA_BIT(LOCKONFAULT,
+			19), /* Lock pages covered when faulted in */
+	DECLARE_VMA_BIT(ACCOUNT, 20), /* Is a VM accounted object */
+	DECLARE_VMA_BIT(NORESERVE, 21), /* should the VM suppress accounting */
+	DECLARE_VMA_BIT(HUGETLB, 22), /* Huge TLB Page VM */
+	DECLARE_VMA_BIT(SYNC, 23), /* Synchronous page faults */
+	DECLARE_VMA_BIT(ARCH_1, 24), /* Architecture-specific flag */
+	DECLARE_VMA_BIT(WIPEONFORK, 25), /* Wipe VMA contents in child. */
+	DECLARE_VMA_BIT(DONTDUMP, 26), /* Do not include in the core dump */
+	DECLARE_VMA_BIT(SOFTDIRTY, 27), /* NOT soft dirty clean area */
+	DECLARE_VMA_BIT(MIXEDMAP,
+			28), /* Can contain struct page and pure PFN pages */
+	DECLARE_VMA_BIT(HUGEPAGE, 29), /* MADV_HUGEPAGE marked this vma */
+	DECLARE_VMA_BIT(NOHUGEPAGE, 30), /* MADV_NOHUGEPAGE marked this vma */
+	DECLARE_VMA_BIT(MERGEABLE, 31), /* KSM may merge identical pages */
 	/* These bits are reused, we define specific uses below. */
 	DECLARE_VMA_BIT(HIGH_ARCH_0, 32),
 	DECLARE_VMA_BIT(HIGH_ARCH_1, 33),
@@ -379,14 +382,15 @@ enum {
 	 */
 	DECLARE_VMA_BIT_ALIAS(SHADOW_STACK, HIGH_ARCH_6),
 #endif
-	DECLARE_VMA_BIT_ALIAS(SAO, ARCH_1),		/* Strong Access Ordering (powerpc) */
-	DECLARE_VMA_BIT_ALIAS(GROWSUP, ARCH_1),		/* parisc */
-	DECLARE_VMA_BIT_ALIAS(SPARC_ADI, ARCH_1),	/* sparc64 */
-	DECLARE_VMA_BIT_ALIAS(ARM64_BTI, ARCH_1),	/* arm64 */
-	DECLARE_VMA_BIT_ALIAS(ARCH_CLEAR, ARCH_1),	/* sparc64, arm64 */
-	DECLARE_VMA_BIT_ALIAS(MAPPED_COPY, ARCH_1),	/* !CONFIG_MMU */
-	DECLARE_VMA_BIT_ALIAS(MTE, HIGH_ARCH_4),	/* arm64 */
-	DECLARE_VMA_BIT_ALIAS(MTE_ALLOWED, HIGH_ARCH_5),/* arm64 */
+	DECLARE_VMA_BIT_ALIAS(SAO,
+			      ARCH_1), /* Strong Access Ordering (powerpc) */
+	DECLARE_VMA_BIT_ALIAS(GROWSUP, ARCH_1), /* parisc */
+	DECLARE_VMA_BIT_ALIAS(SPARC_ADI, ARCH_1), /* sparc64 */
+	DECLARE_VMA_BIT_ALIAS(ARM64_BTI, ARCH_1), /* arm64 */
+	DECLARE_VMA_BIT_ALIAS(ARCH_CLEAR, ARCH_1), /* sparc64, arm64 */
+	DECLARE_VMA_BIT_ALIAS(MAPPED_COPY, ARCH_1), /* !CONFIG_MMU */
+	DECLARE_VMA_BIT_ALIAS(MTE, HIGH_ARCH_4), /* arm64 */
+	DECLARE_VMA_BIT_ALIAS(MTE_ALLOWED, HIGH_ARCH_5), /* arm64 */
 #ifdef CONFIG_STACK_GROWSUP
 	DECLARE_VMA_BIT_ALIAS(STACK, GROWSUP),
 	DECLARE_VMA_BIT_ALIAS(STACK_EARLY, GROWSDOWN),
@@ -397,54 +401,54 @@ enum {
 #undef DECLARE_VMA_BIT
 #undef DECLARE_VMA_BIT_ALIAS
 
-#define INIT_VM_FLAG(name) BIT((__force int) VMA_ ## name ## _BIT)
-#define VM_READ		INIT_VM_FLAG(READ)
-#define VM_WRITE	INIT_VM_FLAG(WRITE)
-#define VM_EXEC		INIT_VM_FLAG(EXEC)
-#define VM_SHARED	INIT_VM_FLAG(SHARED)
-#define VM_MAYREAD	INIT_VM_FLAG(MAYREAD)
-#define VM_MAYWRITE	INIT_VM_FLAG(MAYWRITE)
-#define VM_MAYEXEC	INIT_VM_FLAG(MAYEXEC)
-#define VM_MAYSHARE	INIT_VM_FLAG(MAYSHARE)
-#define VM_GROWSDOWN	INIT_VM_FLAG(GROWSDOWN)
+#define INIT_VM_FLAG(name) BIT((__force int)VMA_##name##_BIT)
+#define VM_READ INIT_VM_FLAG(READ)
+#define VM_WRITE INIT_VM_FLAG(WRITE)
+#define VM_EXEC INIT_VM_FLAG(EXEC)
+#define VM_SHARED INIT_VM_FLAG(SHARED)
+#define VM_MAYREAD INIT_VM_FLAG(MAYREAD)
+#define VM_MAYWRITE INIT_VM_FLAG(MAYWRITE)
+#define VM_MAYEXEC INIT_VM_FLAG(MAYEXEC)
+#define VM_MAYSHARE INIT_VM_FLAG(MAYSHARE)
+#define VM_GROWSDOWN INIT_VM_FLAG(GROWSDOWN)
 #ifdef CONFIG_MMU
-#define VM_UFFD_MISSING	INIT_VM_FLAG(UFFD_MISSING)
+#define VM_UFFD_MISSING INIT_VM_FLAG(UFFD_MISSING)
 #else
-#define VM_UFFD_MISSING	VM_NONE
-#define VM_MAYOVERLAY	INIT_VM_FLAG(MAYOVERLAY)
+#define VM_UFFD_MISSING VM_NONE
+#define VM_MAYOVERLAY INIT_VM_FLAG(MAYOVERLAY)
 #endif
-#define VM_PFNMAP	INIT_VM_FLAG(PFNMAP)
-#define VM_MAYBE_GUARD	INIT_VM_FLAG(MAYBE_GUARD)
-#define VM_UFFD_WP	INIT_VM_FLAG(UFFD_WP)
-#define VM_LOCKED	INIT_VM_FLAG(LOCKED)
-#define VM_IO		INIT_VM_FLAG(IO)
-#define VM_SEQ_READ	INIT_VM_FLAG(SEQ_READ)
-#define VM_RAND_READ	INIT_VM_FLAG(RAND_READ)
-#define VM_DONTCOPY	INIT_VM_FLAG(DONTCOPY)
-#define VM_DONTEXPAND	INIT_VM_FLAG(DONTEXPAND)
-#define VM_LOCKONFAULT	INIT_VM_FLAG(LOCKONFAULT)
-#define VM_ACCOUNT	INIT_VM_FLAG(ACCOUNT)
-#define VM_NORESERVE	INIT_VM_FLAG(NORESERVE)
-#define VM_HUGETLB	INIT_VM_FLAG(HUGETLB)
-#define VM_SYNC		INIT_VM_FLAG(SYNC)
-#define VM_ARCH_1	INIT_VM_FLAG(ARCH_1)
-#define VM_WIPEONFORK	INIT_VM_FLAG(WIPEONFORK)
-#define VM_DONTDUMP	INIT_VM_FLAG(DONTDUMP)
+#define VM_PFNMAP INIT_VM_FLAG(PFNMAP)
+#define VM_MAYBE_GUARD INIT_VM_FLAG(MAYBE_GUARD)
+#define VM_UFFD_WP INIT_VM_FLAG(UFFD_WP)
+#define VM_LOCKED INIT_VM_FLAG(LOCKED)
+#define VM_IO INIT_VM_FLAG(IO)
+#define VM_SEQ_READ INIT_VM_FLAG(SEQ_READ)
+#define VM_RAND_READ INIT_VM_FLAG(RAND_READ)
+#define VM_DONTCOPY INIT_VM_FLAG(DONTCOPY)
+#define VM_DONTEXPAND INIT_VM_FLAG(DONTEXPAND)
+#define VM_LOCKONFAULT INIT_VM_FLAG(LOCKONFAULT)
+#define VM_ACCOUNT INIT_VM_FLAG(ACCOUNT)
+#define VM_NORESERVE INIT_VM_FLAG(NORESERVE)
+#define VM_HUGETLB INIT_VM_FLAG(HUGETLB)
+#define VM_SYNC INIT_VM_FLAG(SYNC)
+#define VM_ARCH_1 INIT_VM_FLAG(ARCH_1)
+#define VM_WIPEONFORK INIT_VM_FLAG(WIPEONFORK)
+#define VM_DONTDUMP INIT_VM_FLAG(DONTDUMP)
 #ifdef CONFIG_MEM_SOFT_DIRTY
-#define VM_SOFTDIRTY	INIT_VM_FLAG(SOFTDIRTY)
+#define VM_SOFTDIRTY INIT_VM_FLAG(SOFTDIRTY)
 #else
-#define VM_SOFTDIRTY	VM_NONE
+#define VM_SOFTDIRTY VM_NONE
 #endif
-#define VM_MIXEDMAP	INIT_VM_FLAG(MIXEDMAP)
-#define VM_HUGEPAGE	INIT_VM_FLAG(HUGEPAGE)
-#define VM_NOHUGEPAGE	INIT_VM_FLAG(NOHUGEPAGE)
-#define VM_MERGEABLE	INIT_VM_FLAG(MERGEABLE)
-#define VM_STACK	INIT_VM_FLAG(STACK)
+#define VM_MIXEDMAP INIT_VM_FLAG(MIXEDMAP)
+#define VM_HUGEPAGE INIT_VM_FLAG(HUGEPAGE)
+#define VM_NOHUGEPAGE INIT_VM_FLAG(NOHUGEPAGE)
+#define VM_MERGEABLE INIT_VM_FLAG(MERGEABLE)
+#define VM_STACK INIT_VM_FLAG(STACK)
 #ifdef CONFIG_STACK_GROWSUP
-#define VM_STACK_EARLY	INIT_VM_FLAG(STACK_EARLY)
+#define VM_STACK_EARLY INIT_VM_FLAG(STACK_EARLY)
 #define VMA_STACK_EARLY mk_vma_flags(VMA_STACK_EARLY_BIT)
 #else
-#define VM_STACK_EARLY	VM_NONE
+#define VM_STACK_EARLY VM_NONE
 #define VMA_STACK_EARLY EMPTY_VMA_FLAGS
 #endif
 #ifdef CONFIG_ARCH_HAS_PKEYS
@@ -456,58 +460,58 @@ enum {
 #if CONFIG_ARCH_PKEY_BITS > 3
 #define VM_PKEY_BIT3 INIT_VM_FLAG(PKEY_BIT3)
 #else
-#define VM_PKEY_BIT3  VM_NONE
+#define VM_PKEY_BIT3 VM_NONE
 #endif /* CONFIG_ARCH_PKEY_BITS > 3 */
 #if CONFIG_ARCH_PKEY_BITS > 4
 #define VM_PKEY_BIT4 INIT_VM_FLAG(PKEY_BIT4)
 #else
-#define VM_PKEY_BIT4  VM_NONE
+#define VM_PKEY_BIT4 VM_NONE
 #endif /* CONFIG_ARCH_PKEY_BITS > 4 */
 #endif /* CONFIG_ARCH_HAS_PKEYS */
 #if defined(CONFIG_X86_USER_SHADOW_STACK) || defined(CONFIG_ARM64_GCS) || \
 	defined(CONFIG_RISCV_USER_CFI)
-#define VM_SHADOW_STACK	INIT_VM_FLAG(SHADOW_STACK)
+#define VM_SHADOW_STACK INIT_VM_FLAG(SHADOW_STACK)
 #define VMA_SHADOW_STACK mk_vma_flags(VMA_SHADOW_STACK_BIT)
 #define VMA_STARTGAP_FLAGS mk_vma_flags(VMA_GROWSDOWN_BIT, VMA_SHADOW_STACK_BIT)
 #else
-#define VM_SHADOW_STACK	VM_NONE
+#define VM_SHADOW_STACK VM_NONE
 #define VMA_SHADOW_STACK EMPTY_VMA_FLAGS
 #define VMA_STARTGAP_FLAGS mk_vma_flags(VMA_GROWSDOWN_BIT)
 #endif
 #if defined(CONFIG_PPC64)
-#define VM_SAO		INIT_VM_FLAG(SAO)
+#define VM_SAO INIT_VM_FLAG(SAO)
 #elif defined(CONFIG_PARISC)
-#define VM_GROWSUP	INIT_VM_FLAG(GROWSUP)
-#define VMA_GROWSUP	mk_vma_flags(VMA_GROWSUP_BIT)
+#define VM_GROWSUP INIT_VM_FLAG(GROWSUP)
+#define VMA_GROWSUP mk_vma_flags(VMA_GROWSUP_BIT)
 #elif defined(CONFIG_SPARC64)
-#define VM_SPARC_ADI	INIT_VM_FLAG(SPARC_ADI)
-#define VM_ARCH_CLEAR	INIT_VM_FLAG(ARCH_CLEAR)
+#define VM_SPARC_ADI INIT_VM_FLAG(SPARC_ADI)
+#define VM_ARCH_CLEAR INIT_VM_FLAG(ARCH_CLEAR)
 #elif defined(CONFIG_ARM64)
-#define VM_ARM64_BTI	INIT_VM_FLAG(ARM64_BTI)
-#define VM_ARCH_CLEAR	INIT_VM_FLAG(ARCH_CLEAR)
+#define VM_ARM64_BTI INIT_VM_FLAG(ARM64_BTI)
+#define VM_ARCH_CLEAR INIT_VM_FLAG(ARCH_CLEAR)
 #elif !defined(CONFIG_MMU)
-#define VM_MAPPED_COPY	INIT_VM_FLAG(MAPPED_COPY)
+#define VM_MAPPED_COPY INIT_VM_FLAG(MAPPED_COPY)
 #endif
 #ifndef VM_GROWSUP
-#define VM_GROWSUP	VM_NONE
-#define VMA_GROWSUP	EMPTY_VMA_FLAGS
+#define VM_GROWSUP VM_NONE
+#define VMA_GROWSUP EMPTY_VMA_FLAGS
 #endif
 #ifdef CONFIG_ARM64_MTE
-#define VM_MTE		INIT_VM_FLAG(MTE)
-#define VM_MTE_ALLOWED	INIT_VM_FLAG(MTE_ALLOWED)
+#define VM_MTE INIT_VM_FLAG(MTE)
+#define VM_MTE_ALLOWED INIT_VM_FLAG(MTE_ALLOWED)
 #else
-#define VM_MTE		VM_NONE
-#define VM_MTE_ALLOWED	VM_NONE
+#define VM_MTE VM_NONE
+#define VM_MTE_ALLOWED VM_NONE
 #endif
 #ifdef CONFIG_HAVE_ARCH_USERFAULTFD_MINOR
-#define VM_UFFD_MINOR	INIT_VM_FLAG(UFFD_MINOR)
+#define VM_UFFD_MINOR INIT_VM_FLAG(UFFD_MINOR)
 #else
-#define VM_UFFD_MINOR	VM_NONE
+#define VM_UFFD_MINOR VM_NONE
 #endif
 #ifdef CONFIG_USERFAULTFD_RWP
-#define VM_UFFD_RWP		INIT_VM_FLAG(UFFD_RWP)
+#define VM_UFFD_RWP INIT_VM_FLAG(UFFD_RWP)
 #else
-#define VM_UFFD_RWP		VM_NONE
+#define VM_UFFD_RWP VM_NONE
 #endif
 
 /*
@@ -516,70 +520,73 @@ enum {
  * 64BIT -- so an out-of-range bit is never fed to mk_vma_flags() on a build
  * whose bitmap cannot hold it.
  */
-#define VMA_UFFD_MISSING	mk_vma_flags(VMA_UFFD_MISSING_BIT)
-#define VMA_UFFD_WP		mk_vma_flags(VMA_UFFD_WP_BIT)
+#define VMA_UFFD_MISSING mk_vma_flags(VMA_UFFD_MISSING_BIT)
+#define VMA_UFFD_WP mk_vma_flags(VMA_UFFD_WP_BIT)
 #ifdef CONFIG_HAVE_ARCH_USERFAULTFD_MINOR
-#define VMA_UFFD_MINOR		mk_vma_flags(VMA_UFFD_MINOR_BIT)
+#define VMA_UFFD_MINOR mk_vma_flags(VMA_UFFD_MINOR_BIT)
 #else
-#define VMA_UFFD_MINOR		EMPTY_VMA_FLAGS
+#define VMA_UFFD_MINOR EMPTY_VMA_FLAGS
 #endif
 #ifdef CONFIG_USERFAULTFD_RWP
-#define VMA_UFFD_RWP		mk_vma_flags(VMA_UFFD_RWP_BIT)
+#define VMA_UFFD_RWP mk_vma_flags(VMA_UFFD_RWP_BIT)
 #else
-#define VMA_UFFD_RWP		EMPTY_VMA_FLAGS
+#define VMA_UFFD_RWP EMPTY_VMA_FLAGS
 #endif
 
 #ifdef CONFIG_64BIT
-#define VM_ALLOW_ANY_UNCACHED	INIT_VM_FLAG(ALLOW_ANY_UNCACHED)
-#define VM_SEALED		INIT_VM_FLAG(SEALED)
+#define VM_ALLOW_ANY_UNCACHED INIT_VM_FLAG(ALLOW_ANY_UNCACHED)
+#define VM_SEALED INIT_VM_FLAG(SEALED)
 #else
-#define VM_ALLOW_ANY_UNCACHED	VM_NONE
-#define VM_SEALED		VM_NONE
+#define VM_ALLOW_ANY_UNCACHED VM_NONE
+#define VM_SEALED VM_NONE
 #endif
 #if defined(CONFIG_64BIT) || defined(CONFIG_PPC32)
-#define VM_DROPPABLE		INIT_VM_FLAG(DROPPABLE)
-#define VMA_DROPPABLE		mk_vma_flags(VMA_DROPPABLE_BIT)
+#define VM_DROPPABLE INIT_VM_FLAG(DROPPABLE)
+#define VMA_DROPPABLE mk_vma_flags(VMA_DROPPABLE_BIT)
 #else
-#define VM_DROPPABLE		VM_NONE
-#define VMA_DROPPABLE		EMPTY_VMA_FLAGS
+#define VM_DROPPABLE VM_NONE
+#define VMA_DROPPABLE EMPTY_VMA_FLAGS
 #endif
 
 /* Bits set in the VMA until the stack is in its final location */
 #define VM_STACK_INCOMPLETE_SETUP (VM_RAND_READ | VM_SEQ_READ | VM_STACK_EARLY)
-#define VMA_STACK_INCOMPLETE_SETUP append_vma_flags(		\
-	VMA_STACK_EARLY, VMA_RAND_READ_BIT, VMA_SEQ_READ_BIT)
+#define VMA_STACK_INCOMPLETE_SETUP \
+	append_vma_flags(VMA_STACK_EARLY, VMA_RAND_READ_BIT, VMA_SEQ_READ_BIT)
 
-#define TASK_EXEC_BIT ((current->personality & READ_IMPLIES_EXEC) ? \
-		       VMA_EXEC_BIT : VMA_READ_BIT)
+#define TASK_EXEC_BIT                                                \
+	((current->personality & READ_IMPLIES_EXEC) ? VMA_EXEC_BIT : \
+							    VMA_READ_BIT)
 
 /* Common data flag combinations */
-#define VMA_DATA_FLAGS_TSK_EXEC	mk_vma_flags(VMA_READ_BIT, VMA_WRITE_BIT, \
-		TASK_EXEC_BIT, VMA_MAYREAD_BIT, VMA_MAYWRITE_BIT,	  \
-		VMA_MAYEXEC_BIT)
-#define VMA_DATA_FLAGS_NON_EXEC	mk_vma_flags(VMA_READ_BIT, VMA_WRITE_BIT, \
-		VMA_MAYREAD_BIT, VMA_MAYWRITE_BIT, VMA_MAYEXEC_BIT)
-#define VMA_DATA_FLAGS_EXEC	mk_vma_flags(VMA_READ_BIT, VMA_WRITE_BIT, \
-		VMA_EXEC_BIT, VMA_MAYREAD_BIT, VMA_MAYWRITE_BIT,	  \
-		VMA_MAYEXEC_BIT)
+#define VMA_DATA_FLAGS_TSK_EXEC                                  \
+	mk_vma_flags(VMA_READ_BIT, VMA_WRITE_BIT, TASK_EXEC_BIT, \
+		     VMA_MAYREAD_BIT, VMA_MAYWRITE_BIT, VMA_MAYEXEC_BIT)
+#define VMA_DATA_FLAGS_NON_EXEC                                    \
+	mk_vma_flags(VMA_READ_BIT, VMA_WRITE_BIT, VMA_MAYREAD_BIT, \
+		     VMA_MAYWRITE_BIT, VMA_MAYEXEC_BIT)
+#define VMA_DATA_FLAGS_EXEC                                     \
+	mk_vma_flags(VMA_READ_BIT, VMA_WRITE_BIT, VMA_EXEC_BIT, \
+		     VMA_MAYREAD_BIT, VMA_MAYWRITE_BIT, VMA_MAYEXEC_BIT)
 
-#ifndef VMA_DATA_DEFAULT_FLAGS		/* arch can override this */
-#define VMA_DATA_DEFAULT_FLAGS  VMA_DATA_FLAGS_EXEC
+#ifndef VMA_DATA_DEFAULT_FLAGS /* arch can override this */
+#define VMA_DATA_DEFAULT_FLAGS VMA_DATA_FLAGS_EXEC
 #endif
 
-#ifndef VMA_STACK_DEFAULT_FLAGS		/* arch can override this */
+#ifndef VMA_STACK_DEFAULT_FLAGS /* arch can override this */
 #define VMA_STACK_DEFAULT_FLAGS VMA_DATA_DEFAULT_FLAGS
 #endif
 
-#define VMA_STACK_FLAGS	append_vma_flags(VMA_STACK_DEFAULT_FLAGS,	\
-		VMA_STACK_BIT, VMA_ACCOUNT_BIT)
+#define VMA_STACK_FLAGS                                          \
+	append_vma_flags(VMA_STACK_DEFAULT_FLAGS, VMA_STACK_BIT, \
+			 VMA_ACCOUNT_BIT)
 
 /* Temporary until VMA flags conversion complete. */
 #define VM_STACK_FLAGS vma_flags_to_legacy(VMA_STACK_FLAGS)
 
 #ifdef CONFIG_MSEAL_SYSTEM_MAPPINGS
-#define VM_SEALED_SYSMAP	VM_SEALED
+#define VM_SEALED_SYSMAP VM_SEALED
 #else
-#define VM_SEALED_SYSMAP	VM_NONE
+#define VM_SEALED_SYSMAP VM_NONE
 #endif
 
 /* VMA basic access permission flags */
@@ -590,8 +597,9 @@ enum {
  * Special vmas that are non-mergable, non-mlock()able.
  */
 
-#define VMA_SPECIAL_FLAGS mk_vma_flags(VMA_IO_BIT, VMA_DONTEXPAND_BIT, \
-				       VMA_PFNMAP_BIT, VMA_MIXEDMAP_BIT)
+#define VMA_SPECIAL_FLAGS                                            \
+	mk_vma_flags(VMA_IO_BIT, VMA_DONTEXPAND_BIT, VMA_PFNMAP_BIT, \
+		     VMA_MIXEDMAP_BIT)
 #define VM_SPECIAL vma_flags_to_legacy(VMA_SPECIAL_FLAGS)
 
 /*
@@ -607,28 +615,29 @@ enum {
  *   DONTDUMP
  *      Omit vma from core dump, even when VM_IO turned off.
  */
-#define VMA_REMAP_FLAGS mk_vma_flags(VMA_IO_BIT, VMA_PFNMAP_BIT,	\
-				     VMA_DONTEXPAND_BIT, VMA_DONTDUMP_BIT)
+#define VMA_REMAP_FLAGS                                              \
+	mk_vma_flags(VMA_IO_BIT, VMA_PFNMAP_BIT, VMA_DONTEXPAND_BIT, \
+		     VMA_DONTDUMP_BIT)
 
 /* This mask prevents VMA from being scanned with khugepaged */
 #define VM_NO_KHUGEPAGED (VM_SPECIAL | VM_HUGETLB)
 
 /* This mask defines which mm->def_flags a process can inherit its parent */
-#define VM_INIT_DEF_MASK	VM_NOHUGEPAGE
+#define VM_INIT_DEF_MASK VM_NOHUGEPAGE
 
 /* This mask represents all the VMA flag bits used by mlock */
-#define VM_LOCKED_MASK	(VM_LOCKED | VM_LOCKONFAULT)
+#define VM_LOCKED_MASK (VM_LOCKED | VM_LOCKONFAULT)
 
-#define VMA_LOCKED_MASK	mk_vma_flags(VMA_LOCKED_BIT, VMA_LOCKONFAULT_BIT)
+#define VMA_LOCKED_MASK mk_vma_flags(VMA_LOCKED_BIT, VMA_LOCKONFAULT_BIT)
 
 /* These flags can be updated atomically via VMA/mmap read lock. */
 #define VM_ATOMIC_SET_ALLOWED VM_MAYBE_GUARD
 
 /* Arch-specific flags to clear when updating VM flags on protection change */
 #ifndef VM_ARCH_CLEAR
-#define VM_ARCH_CLEAR	VM_NONE
+#define VM_ARCH_CLEAR VM_NONE
 #endif
-#define VM_FLAGS_CLEAR	(ARCH_VM_PKEY_FLAGS | VM_ARCH_CLEAR)
+#define VM_FLAGS_CLEAR (ARCH_VM_PKEY_FLAGS | VM_ARCH_CLEAR)
 
 /*
  * Flags which should be 'sticky' on merge - that is, flags which, when one VMA
@@ -692,8 +701,8 @@ enum {
  *                           only and thus cannot be reconstructed on page
  *                           fault.
  */
-#define VM_COPY_ON_FORK (VM_PFNMAP | VM_MIXEDMAP | VM_UFFD_WP | VM_UFFD_RWP | \
-			 VM_MAYBE_GUARD)
+#define VM_COPY_ON_FORK \
+	(VM_PFNMAP | VM_MIXEDMAP | VM_UFFD_WP | VM_UFFD_RWP | VM_MAYBE_GUARD)
 
 /*
  * mapping from the currently active vm_flags protection bits (the
@@ -704,9 +713,9 @@ enum {
  * The default fault flags that should be used by most of the
  * arch-specific page fault handlers.
  */
-#define FAULT_FLAG_DEFAULT  (FAULT_FLAG_ALLOW_RETRY | \
-			     FAULT_FLAG_KILLABLE | \
-			     FAULT_FLAG_INTERRUPTIBLE)
+#define FAULT_FLAG_DEFAULT                              \
+	(FAULT_FLAG_ALLOW_RETRY | FAULT_FLAG_KILLABLE | \
+	 FAULT_FLAG_INTERRUPTIBLE)
 
 /**
  * fault_flag_allow_retry_first - check ALLOW_RETRY the first time
@@ -724,21 +733,21 @@ enum {
 static inline bool fault_flag_allow_retry_first(enum fault_flag flags)
 {
 	return (flags & FAULT_FLAG_ALLOW_RETRY) &&
-	    (!(flags & FAULT_FLAG_TRIED));
+	       (!(flags & FAULT_FLAG_TRIED));
 }
 
-#define FAULT_FLAG_TRACE \
-	{ FAULT_FLAG_WRITE,		"WRITE" }, \
-	{ FAULT_FLAG_MKWRITE,		"MKWRITE" }, \
-	{ FAULT_FLAG_ALLOW_RETRY,	"ALLOW_RETRY" }, \
-	{ FAULT_FLAG_RETRY_NOWAIT,	"RETRY_NOWAIT" }, \
-	{ FAULT_FLAG_KILLABLE,		"KILLABLE" }, \
-	{ FAULT_FLAG_TRIED,		"TRIED" }, \
-	{ FAULT_FLAG_USER,		"USER" }, \
-	{ FAULT_FLAG_REMOTE,		"REMOTE" }, \
-	{ FAULT_FLAG_INSTRUCTION,	"INSTRUCTION" }, \
-	{ FAULT_FLAG_INTERRUPTIBLE,	"INTERRUPTIBLE" }, \
-	{ FAULT_FLAG_VMA_LOCK,		"VMA_LOCK" }
+#define FAULT_FLAG_TRACE                                                    \
+	{ FAULT_FLAG_WRITE, "WRITE" }, { FAULT_FLAG_MKWRITE, "MKWRITE" },   \
+		{ FAULT_FLAG_ALLOW_RETRY, "ALLOW_RETRY" },                  \
+		{ FAULT_FLAG_RETRY_NOWAIT, "RETRY_NOWAIT" },                \
+		{ FAULT_FLAG_KILLABLE, "KILLABLE" },                        \
+		{ FAULT_FLAG_TRIED, "TRIED" }, { FAULT_FLAG_USER, "USER" }, \
+		{ FAULT_FLAG_REMOTE, "REMOTE" },                            \
+		{ FAULT_FLAG_INSTRUCTION, "INSTRUCTION" },                  \
+		{ FAULT_FLAG_INTERRUPTIBLE, "INTERRUPTIBLE" },              \
+	{                                                                   \
+		FAULT_FLAG_VMA_LOCK, "VMA_LOCK"                             \
+	}
 
 /*
  * vm_fault is filled by the pagefault handler and passed to the vma's
@@ -752,42 +761,43 @@ static inline bool fault_flag_allow_retry_first(enum fault_flag flags)
  */
 struct vm_fault {
 	const struct {
-		struct vm_area_struct *vma;	/* Target VMA */
-		gfp_t gfp_mask;			/* gfp mask to be used for allocations */
-		pgoff_t pgoff;			/* Logical page offset based on vma */
-		unsigned long address;		/* Faulting virtual address - masked */
-		unsigned long real_address;	/* Faulting virtual address - unmasked */
+		struct vm_area_struct *vma; /* Target VMA */
+		gfp_t gfp_mask; /* gfp mask to be used for allocations */
+		pgoff_t pgoff; /* Logical page offset based on vma */
+		unsigned long address; /* Faulting virtual address - masked */
+		unsigned long
+			real_address; /* Faulting virtual address - unmasked */
 	};
-	enum fault_flag flags;		/* FAULT_FLAG_xxx flags
+	enum fault_flag flags; /* FAULT_FLAG_xxx flags
 					 * XXX: should really be 'const' */
-	pmd_t *pmd;			/* Pointer to pmd entry matching
+	pmd_t *pmd; /* Pointer to pmd entry matching
 					 * the 'address' */
-	pud_t *pud;			/* Pointer to pud entry matching
+	pud_t *pud; /* Pointer to pud entry matching
 					 * the 'address'
 					 */
 	union {
-		pte_t orig_pte;		/* Value of PTE at the time of fault */
-		pmd_t orig_pmd;		/* Value of PMD at the time of fault,
+		pte_t orig_pte; /* Value of PTE at the time of fault */
+		pmd_t orig_pmd; /* Value of PMD at the time of fault,
 					 * used by PMD fault only.
 					 */
 	};
 
-	struct page *cow_page;		/* Page handler may use for COW fault */
-	struct page *page;		/* ->fault handlers should return a
+	struct page *cow_page; /* Page handler may use for COW fault */
+	struct page *page; /* ->fault handlers should return a
 					 * page here, unless VM_FAULT_NOPAGE
 					 * is set (which is also implied by
 					 * VM_FAULT_ERROR).
 					 */
 	/* These three entries are valid only while holding ptl lock */
-	pte_t *pte;			/* Pointer to pte entry matching
+	pte_t *pte; /* Pointer to pte entry matching
 					 * the 'address'. NULL if the page
 					 * table hasn't been allocated.
 					 */
-	spinlock_t *ptl;		/* Page table lock.
+	spinlock_t *ptl; /* Page table lock.
 					 * Protects pte page table if 'pte'
 					 * is not NULL, otherwise pmd.
 					 */
-	pgtable_t prealloc_pte;		/* Pre-allocated pte page table.
+	pgtable_t prealloc_pte; /* Pre-allocated pte page table.
 					 * vm_ops->map_pages() sets up a page
 					 * table from atomic context.
 					 * do_fault_around() pre-allocates
@@ -844,8 +854,8 @@ struct vm_operations_struct {
 			unsigned long end, unsigned long newflags);
 	vm_fault_t (*fault)(struct vm_fault *vmf);
 	vm_fault_t (*huge_fault)(struct vm_fault *vmf, unsigned int order);
-	vm_fault_t (*map_pages)(struct vm_fault *vmf,
-			pgoff_t start_pgoff, pgoff_t end_pgoff);
+	vm_fault_t (*map_pages)(struct vm_fault *vmf, pgoff_t start_pgoff,
+				pgoff_t end_pgoff);
 	unsigned long (*pagesize)(struct vm_area_struct *vma);
 
 	/* notification that a previously read-only page is about to become
@@ -859,8 +869,8 @@ struct vm_operations_struct {
 	 * for use by special VMAs. See also generic_access_phys() for a generic
 	 * implementation useful for any iomem mapping.
 	 */
-	int (*access)(struct vm_area_struct *vma, unsigned long addr,
-		      void *buf, int len, int write);
+	int (*access)(struct vm_area_struct *vma, unsigned long addr, void *buf,
+		      int len, int write);
 
 	/* Called by the /proc/PID/maps code to ask the vma whether it
 	 * has a special name.  Returning non-NULL will also cause this
@@ -920,8 +930,12 @@ static inline void vma_numab_state_free(struct vm_area_struct *vma)
 	kfree(vma->numab_state);
 }
 #else
-static inline void vma_numab_state_init(struct vm_area_struct *vma) {}
-static inline void vma_numab_state_free(struct vm_area_struct *vma) {}
+static inline void vma_numab_state_init(struct vm_area_struct *vma)
+{
+}
+static inline void vma_numab_state_free(struct vm_area_struct *vma)
+{
+}
 #endif /* CONFIG_NUMA_BALANCING */
 
 /*
@@ -998,10 +1012,10 @@ static inline void vma_init(struct vm_area_struct *vma, struct mm_struct *mm)
 }
 
 /* Use when VMA is not part of the VMA tree and needs no locking */
-static inline void vm_flags_init(struct vm_area_struct *vma,
-				 vm_flags_t flags)
+static inline void vm_flags_init(struct vm_area_struct *vma, vm_flags_t flags)
 {
-	VM_WARN_ON_ONCE(!pgtable_supports_soft_dirty() && (flags & VM_SOFTDIRTY));
+	VM_WARN_ON_ONCE(!pgtable_supports_soft_dirty() &&
+			(flags & VM_SOFTDIRTY));
 	vma_flags_clear_all(&vma->flags);
 	vma_flags_overwrite_word(&vma->flags, flags);
 }
@@ -1011,10 +1025,10 @@ static inline void vm_flags_init(struct vm_area_struct *vma,
  * Note: vm_flags_reset and vm_flags_reset_once do not lock the vma and
  * it should be locked explicitly beforehand.
  */
-static inline void vm_flags_reset(struct vm_area_struct *vma,
-				  vm_flags_t flags)
+static inline void vm_flags_reset(struct vm_area_struct *vma, vm_flags_t flags)
 {
-	VM_WARN_ON_ONCE(!pgtable_supports_soft_dirty() && (flags & VM_SOFTDIRTY));
+	VM_WARN_ON_ONCE(!pgtable_supports_soft_dirty() &&
+			(flags & VM_SOFTDIRTY));
 	vma_assert_write_locked(vma);
 	vm_flags_init(vma, flags);
 }
@@ -1035,17 +1049,16 @@ static inline void vma_flags_reset_once(struct vm_area_struct *vma,
 	}
 }
 
-static inline void vm_flags_set(struct vm_area_struct *vma,
-				vm_flags_t flags)
+static inline void vm_flags_set(struct vm_area_struct *vma, vm_flags_t flags)
 {
 	vma_start_write(vma);
 	vma_flags_set_word(&vma->flags, flags);
 }
 
-static inline void vm_flags_clear(struct vm_area_struct *vma,
-				  vm_flags_t flags)
+static inline void vm_flags_clear(struct vm_area_struct *vma, vm_flags_t flags)
 {
-	VM_WARN_ON_ONCE(!pgtable_supports_soft_dirty() && (flags & VM_SOFTDIRTY));
+	VM_WARN_ON_ONCE(!pgtable_supports_soft_dirty() &&
+			(flags & VM_SOFTDIRTY));
 	vma_start_write(vma);
 	vma_flags_clear_word(&vma->flags, flags);
 }
@@ -1054,8 +1067,8 @@ static inline void vm_flags_clear(struct vm_area_struct *vma,
  * Use only if VMA is not part of the VMA tree or has no other users and
  * therefore needs no locking.
  */
-static inline void __vm_flags_mod(struct vm_area_struct *vma,
-				  vm_flags_t set, vm_flags_t clear)
+static inline void __vm_flags_mod(struct vm_area_struct *vma, vm_flags_t set,
+				  vm_flags_t clear)
 {
 	vm_flags_init(vma, (vma->vm_flags | set) & ~clear);
 }
@@ -1064,15 +1077,15 @@ static inline void __vm_flags_mod(struct vm_area_struct *vma,
  * Use only when the order of set/clear operations is unimportant, otherwise
  * use vm_flags_{set|clear} explicitly.
  */
-static inline void vm_flags_mod(struct vm_area_struct *vma,
-				vm_flags_t set, vm_flags_t clear)
+static inline void vm_flags_mod(struct vm_area_struct *vma, vm_flags_t set,
+				vm_flags_t clear)
 {
 	vma_start_write(vma);
 	__vm_flags_mod(vma, set, clear);
 }
 
 static __always_inline bool __vma_atomic_valid_flag(struct vm_area_struct *vma,
-		vma_flag_t bit)
+						    vma_flag_t bit)
 {
 	const vm_flags_t mask = BIT((__force int)bit);
 
@@ -1088,7 +1101,7 @@ static __always_inline bool __vma_atomic_valid_flag(struct vm_area_struct *vma,
  * valid flags are allowed to do this.
  */
 static __always_inline void vma_set_atomic_flag(struct vm_area_struct *vma,
-		vma_flag_t bit)
+						vma_flag_t bit)
 {
 	unsigned long *bitmap = vma->flags.__vma_flags;
 
@@ -1105,7 +1118,7 @@ static __always_inline void vma_set_atomic_flag(struct vm_area_struct *vma,
  * achieved through some other means, or that races are permissible.
  */
 static __always_inline bool vma_test_atomic_flag(struct vm_area_struct *vma,
-		vma_flag_t bit)
+						 vma_flag_t bit)
 {
 	if (__vma_atomic_valid_flag(vma, bit))
 		return test_bit((__force int)bit, &vma->vm_flags);
@@ -1115,7 +1128,7 @@ static __always_inline bool vma_test_atomic_flag(struct vm_area_struct *vma,
 
 /* Set an individual VMA flag in flags, non-atomically. */
 static __always_inline void vma_flags_set_flag(vma_flags_t *flags,
-		vma_flag_t bit)
+					       vma_flag_t bit)
 {
 	unsigned long *bitmap = flags->__vma_flags;
 
@@ -1123,7 +1136,8 @@ static __always_inline void vma_flags_set_flag(vma_flags_t *flags,
 }
 
 static __always_inline vma_flags_t __mk_vma_flags(vma_flags_t flags,
-		size_t count, const vma_flag_t *bits)
+						  size_t count,
+						  const vma_flag_t *bits)
 {
 	int i;
 
@@ -1142,8 +1156,9 @@ static __always_inline vma_flags_t __mk_vma_flags(vma_flags_t flags,
  * The compiler cleverly optimises away all of the work and this ends up being
  * equivalent to aggregating the values manually.
  */
-#define mk_vma_flags(...) __mk_vma_flags(EMPTY_VMA_FLAGS,			\
-		COUNT_ARGS(__VA_ARGS__), (const vma_flag_t []){__VA_ARGS__})
+#define mk_vma_flags(...)                                        \
+	__mk_vma_flags(EMPTY_VMA_FLAGS, COUNT_ARGS(__VA_ARGS__), \
+		       (const vma_flag_t[]){ __VA_ARGS__ })
 
 /*
  * Helper macro which acts like mk_vma_flags, only appending to a copy of the
@@ -1152,8 +1167,9 @@ static __always_inline vma_flags_t __mk_vma_flags(vma_flags_t flags,
  * vma_flags_t flags = append_vma_flags(VMA_STACK_DEFAULT_FLAGS, VMA_STACK_BIT,
  *              VMA_ACCOUNT_BIT);
  */
-#define append_vma_flags(flags, ...) __mk_vma_flags(flags,			\
-		COUNT_ARGS(__VA_ARGS__), (const vma_flag_t []){__VA_ARGS__})
+#define append_vma_flags(flags, ...)                   \
+	__mk_vma_flags(flags, COUNT_ARGS(__VA_ARGS__), \
+		       (const vma_flag_t[]){ __VA_ARGS__ })
 
 /* Calculates the number of set bits in the specified VMA flags. */
 static __always_inline int vma_flags_count(const vma_flags_t *flags)
@@ -1169,7 +1185,7 @@ static __always_inline int vma_flags_count(const vma_flags_t *flags)
  * if (vma_flags_test(flags, VMA_READ_BIT)) { ... }
  */
 static __always_inline bool vma_flags_test(const vma_flags_t *flags,
-		vma_flag_t bit)
+					   vma_flag_t bit)
 {
 	const unsigned long *bitmap = flags->__vma_flags;
 
@@ -1199,12 +1215,12 @@ static __always_inline vma_flags_t vma_flags_and_mask(const vma_flags_t *flags,
  * vma_flags_t read_flags = vma_flags_and(&flags, VMA_READ_BIT,
  *                                        VMA_MAY_READ_BIT);
  */
-#define vma_flags_and(flags, ...)				\
+#define vma_flags_and(flags, ...) \
 	vma_flags_and_mask(flags, mk_vma_flags(__VA_ARGS__))
 
 /*  Test each of to_test flags in flags, non-atomically. */
 static __always_inline bool vma_flags_test_any_mask(const vma_flags_t *flags,
-		vma_flags_t to_test)
+						    vma_flags_t to_test)
 {
 	const unsigned long *bitmap = flags->__vma_flags;
 	const unsigned long *bitmap_to_test = to_test.__vma_flags;
@@ -1222,7 +1238,7 @@ static __always_inline bool vma_flags_test_any_mask(const vma_flags_t *flags,
 
 /* Test that ALL of the to_test flags are set, non-atomically. */
 static __always_inline bool vma_flags_test_all_mask(const vma_flags_t *flags,
-		vma_flags_t to_test)
+						    vma_flags_t to_test)
 {
 	const unsigned long *bitmap = flags->__vma_flags;
 	const unsigned long *bitmap_to_test = to_test.__vma_flags;
@@ -1251,7 +1267,7 @@ static __always_inline bool vma_flags_test_all_mask(const vma_flags_t *flags,
  * otherwise.
  */
 static __always_inline bool vma_flags_test_single_mask(const vma_flags_t *flags,
-		vma_flags_t flagmask)
+						       vma_flags_t flagmask)
 {
 	VM_WARN_ON_ONCE(vma_flags_count(&flagmask) > 1);
 
@@ -1260,7 +1276,7 @@ static __always_inline bool vma_flags_test_single_mask(const vma_flags_t *flags,
 
 /* Set each of the to_set flags in flags, non-atomically. */
 static __always_inline void vma_flags_set_mask(vma_flags_t *flags,
-		vma_flags_t to_set)
+					       vma_flags_t to_set)
 {
 	unsigned long *bitmap = flags->__vma_flags;
 	const unsigned long *bitmap_to_set = to_set.__vma_flags;
@@ -1276,8 +1292,8 @@ static __always_inline void vma_flags_set_mask(vma_flags_t *flags,
 #define vma_flags_set(flags, ...) \
 	vma_flags_set_mask(flags, mk_vma_flags(__VA_ARGS__))
 
-static __always_inline vma_flags_t __mk_vma_flags_from_masks(size_t count,
-		const vma_flags_t *masks)
+static __always_inline vma_flags_t
+__mk_vma_flags_from_masks(size_t count, const vma_flags_t *masks)
 {
 	vma_flags_t flags = EMPTY_VMA_FLAGS;
 	size_t i;
@@ -1296,13 +1312,13 @@ static __always_inline vma_flags_t __mk_vma_flags_from_masks(size_t count,
  * each of which may be EMPTY_VMA_FLAGS when its feature is unavailable -- so a
  * bit that does not exist on the current build is never materialised.
  */
-#define mk_vma_flags_from_masks(...)					\
-	__mk_vma_flags_from_masks(COUNT_ARGS(__VA_ARGS__),		\
-		(const vma_flags_t []){__VA_ARGS__})
+#define mk_vma_flags_from_masks(...)                       \
+	__mk_vma_flags_from_masks(COUNT_ARGS(__VA_ARGS__), \
+				  (const vma_flags_t[]){ __VA_ARGS__ })
 
 /* Clear all of the to-clear flags in flags, non-atomically. */
 static __always_inline void vma_flags_clear_mask(vma_flags_t *flags,
-		vma_flags_t to_clear)
+						 vma_flags_t to_clear)
 {
 	unsigned long *bitmap = flags->__vma_flags;
 	const unsigned long *bitmap_to_clear = to_clear.__vma_flags;
@@ -1322,8 +1338,8 @@ static __always_inline void vma_flags_clear_mask(vma_flags_t *flags,
  * Obtain a VMA flags value containing those flags that are present in flags or
  * flags_other but not in both.
  */
-static __always_inline vma_flags_t vma_flags_diff_pair(const vma_flags_t *flags,
-		const vma_flags_t *flags_other)
+static __always_inline vma_flags_t
+vma_flags_diff_pair(const vma_flags_t *flags, const vma_flags_t *flags_other)
 {
 	vma_flags_t dst;
 	const unsigned long *bitmap_other = flags_other->__vma_flags;
@@ -1368,14 +1384,14 @@ static __always_inline bool vma_flags_same_mask(const vma_flags_t *flags,
  * if (vma_test(vma, VMA_READ_BIT)) { ... }
  */
 static __always_inline bool vma_test(const struct vm_area_struct *vma,
-		vma_flag_t bit)
+				     vma_flag_t bit)
 {
 	return vma_flags_test(&vma->flags, bit);
 }
 
 /* Helper to test any VMA flags in a VMA . */
 static __always_inline bool vma_test_any_mask(const struct vm_area_struct *vma,
-		vma_flags_t flags)
+					      vma_flags_t flags)
 {
 	return vma_flags_test_any_mask(&vma->flags, flags);
 }
@@ -1387,8 +1403,7 @@ static __always_inline bool vma_test_any_mask(const struct vm_area_struct *vma,
  * if (vma_test_any(vma, VMA_IO_BIT, VMA_PFNMAP_BIT,
  *		VMA_DONTEXPAND_BIT, VMA_DONTDUMP_BIT)) { ... }
  */
-#define vma_test_any(vma, ...) \
-	vma_test_any_mask(vma, mk_vma_flags(__VA_ARGS__))
+#define vma_test_any(vma, ...) vma_test_any_mask(vma, mk_vma_flags(__VA_ARGS__))
 
 /*
  * Helper to test that ALL specified flags are set in a VMA.
@@ -1397,7 +1412,7 @@ static __always_inline bool vma_test_any_mask(const struct vm_area_struct *vma,
  * you.
  */
 static __always_inline bool vma_test_all_mask(const struct vm_area_struct *vma,
-		vma_flags_t flags)
+					      vma_flags_t flags)
 {
 	return vma_flags_test_all_mask(&vma->flags, flags);
 }
@@ -1407,8 +1422,7 @@ static __always_inline bool vma_test_all_mask(const struct vm_area_struct *vma,
  *
  * if (vma_test_all(vma, VMA_READ_BIT, VMA_MAYREAD_BIT) { ... }
  */
-#define vma_test_all(vma, ...) \
-	vma_test_all_mask(vma, mk_vma_flags(__VA_ARGS__))
+#define vma_test_all(vma, ...) vma_test_all_mask(vma, mk_vma_flags(__VA_ARGS__))
 
 /*
  * Helper to test that a flag mask of type vma_flags_t has a SINGLE flag set
@@ -1435,7 +1449,7 @@ vma_test_single_mask(const struct vm_area_struct *vma, vma_flags_t flagmask)
  * you.
  */
 static __always_inline void vma_set_flags_mask(struct vm_area_struct *vma,
-		vma_flags_t flags)
+					       vma_flags_t flags)
 {
 	vma_flags_set_mask(&vma->flags, flags);
 }
@@ -1454,7 +1468,7 @@ static __always_inline void vma_set_flags_mask(struct vm_area_struct *vma,
 
 /* Helper to clear all VMA flags in a VMA. */
 static __always_inline void vma_clear_flags_mask(struct vm_area_struct *vma,
-		vma_flags_t flags)
+						 vma_flags_t flags)
 {
 	vma_flags_clear_mask(&vma->flags, flags);
 }
@@ -1474,14 +1488,14 @@ static __always_inline void vma_clear_flags_mask(struct vm_area_struct *vma,
  * if (vma_desc_test(desc, VMA_READ_BIT)) { ... }
  */
 static __always_inline bool vma_desc_test(const struct vm_area_desc *desc,
-		vma_flag_t bit)
+					  vma_flag_t bit)
 {
 	return vma_flags_test(&desc->vma_flags, bit);
 }
 
 /* Helper to test any VMA flags in a VMA descriptor. */
-static __always_inline bool vma_desc_test_any_mask(const struct vm_area_desc *desc,
-		vma_flags_t flags)
+static __always_inline bool
+vma_desc_test_any_mask(const struct vm_area_desc *desc, vma_flags_t flags)
 {
 	return vma_flags_test_any_mask(&desc->vma_flags, flags);
 }
@@ -1497,8 +1511,8 @@ static __always_inline bool vma_desc_test_any_mask(const struct vm_area_desc *de
 	vma_desc_test_any_mask(desc, mk_vma_flags(__VA_ARGS__))
 
 /* Helper to test all VMA flags in a VMA descriptor. */
-static __always_inline bool vma_desc_test_all_mask(const struct vm_area_desc *desc,
-		vma_flags_t flags)
+static __always_inline bool
+vma_desc_test_all_mask(const struct vm_area_desc *desc, vma_flags_t flags)
 {
 	return vma_flags_test_all_mask(&desc->vma_flags, flags);
 }
@@ -1514,7 +1528,7 @@ static __always_inline bool vma_desc_test_all_mask(const struct vm_area_desc *de
 
 /* Helper to set all VMA flags in a VMA descriptor. */
 static __always_inline void vma_desc_set_flags_mask(struct vm_area_desc *desc,
-		vma_flags_t flags)
+						    vma_flags_t flags)
 {
 	vma_flags_set_mask(&desc->vma_flags, flags);
 }
@@ -1531,7 +1545,7 @@ static __always_inline void vma_desc_set_flags_mask(struct vm_area_desc *desc,
 
 /* Helper to clear all VMA flags in a VMA descriptor. */
 static __always_inline void vma_desc_clear_flags_mask(struct vm_area_desc *desc,
-		vma_flags_t flags)
+						      vma_flags_t flags)
 {
 	vma_flags_clear_mask(&desc->vma_flags, flags);
 }
@@ -1568,7 +1582,7 @@ static inline bool vma_is_anonymous(const struct vm_area_struct *vma)
 static inline bool vma_is_initial_heap(const struct vm_area_struct *vma)
 {
 	return vma->vm_start < vma->vm_mm->brk &&
-		vma->vm_end > vma->vm_mm->start_brk;
+	       vma->vm_end > vma->vm_mm->start_brk;
 }
 
 /*
@@ -1583,7 +1597,7 @@ static inline bool vma_is_initial_stack(const struct vm_area_struct *vma)
 	 * languages like Go.
 	 */
 	return vma->vm_start <= vma->vm_mm->start_stack &&
-		vma->vm_end >= vma->vm_mm->start_stack;
+	       vma->vm_end >= vma->vm_mm->start_stack;
 }
 
 static inline bool vma_flags_can_grow(const vma_flags_t *flags)
@@ -1607,7 +1621,7 @@ static inline bool vma_is_temporary_stack(const struct vm_area_struct *vma)
 		return false;
 
 	if ((vma->vm_flags & VM_STACK_INCOMPLETE_SETUP) ==
-						VM_STACK_INCOMPLETE_SETUP)
+	    VM_STACK_INCOMPLETE_SETUP)
 		return true;
 
 	return false;
@@ -1661,8 +1675,8 @@ static inline unsigned long vma_kernel_pagesize(struct vm_area_struct *vma)
 
 unsigned long vma_mmu_pagesize(struct vm_area_struct *vma);
 
-static inline
-struct vm_area_struct *vma_find(struct vma_iterator *vmi, unsigned long max)
+static inline struct vm_area_struct *vma_find(struct vma_iterator *vmi,
+					      unsigned long max)
 {
 	return mas_find(&vmi->mas, max - 1);
 }
@@ -1676,12 +1690,11 @@ static inline struct vm_area_struct *vma_next(struct vma_iterator *vmi)
 	return mas_find(&vmi->mas, ULONG_MAX);
 }
 
-static inline
-struct vm_area_struct *vma_iter_next_range(struct vma_iterator *vmi)
+static inline struct vm_area_struct *
+vma_iter_next_range(struct vma_iterator *vmi)
 {
 	return mas_next_range(&vmi->mas, ULONG_MAX);
 }
-
 
 static inline struct vm_area_struct *vma_prev(struct vma_iterator *vmi)
 {
@@ -1689,7 +1702,8 @@ static inline struct vm_area_struct *vma_prev(struct vma_iterator *vmi)
 }
 
 static inline int vma_iter_clear_gfp(struct vma_iterator *vmi,
-			unsigned long start, unsigned long end, gfp_t gfp)
+				     unsigned long start, unsigned long end,
+				     gfp_t gfp)
 {
 	__mas_set_range(&vmi->mas, start, end - 1);
 	mas_store_gfp(&vmi->mas, NULL, gfp);
@@ -1728,11 +1742,11 @@ static inline void vma_iter_set(struct vma_iterator *vmi, unsigned long addr)
 	mas_set(&vmi->mas, addr);
 }
 
-#define for_each_vma(__vmi, __vma)					\
+#define for_each_vma(__vmi, __vma) \
 	while (((__vma) = vma_next(&(__vmi))) != NULL)
 
 /* The MM code likes to work with exclusive end addresses */
-#define for_each_vma_range(__vmi, __vma, __end)				\
+#define for_each_vma_range(__vmi, __vma, __end) \
 	while (((__vma) = vma_find(&(__vmi), (__end))) != NULL)
 
 #ifdef CONFIG_SHMEM
@@ -1743,14 +1757,23 @@ static inline void vma_iter_set(struct vma_iterator *vmi, unsigned long addr)
 bool vma_is_shmem(const struct vm_area_struct *vma);
 bool vma_is_anon_shmem(const struct vm_area_struct *vma);
 #else
-static inline bool vma_is_shmem(const struct vm_area_struct *vma) { return false; }
-static inline bool vma_is_anon_shmem(const struct vm_area_struct *vma) { return false; }
+static inline bool vma_is_shmem(const struct vm_area_struct *vma)
+{
+	return false;
+}
+static inline bool vma_is_anon_shmem(const struct vm_area_struct *vma)
+{
+	return false;
+}
 #endif
 
 int vma_is_stack_for_current(const struct vm_area_struct *vma);
 
 /* flush_tlb_range() takes a vma, not a mm, and can care about flags */
-#define TLB_FLUSH_VMA(mm,flags) { .vm_mm = (mm), .vm_flags = (flags) }
+#define TLB_FLUSH_VMA(mm, flags)                   \
+	{                                          \
+		.vm_mm = (mm), .vm_flags = (flags) \
+	}
 
 struct mmu_gather;
 struct inode;
@@ -1913,7 +1936,8 @@ static inline int is_vmalloc_or_module_addr(const void *x)
 static inline int folio_entire_mapcount(const struct folio *folio)
 {
 	VM_BUG_ON_FOLIO(!folio_test_large(folio), folio);
-	if (!IS_ENABLED(CONFIG_64BIT) && unlikely(folio_large_order(folio) == 1))
+	if (!IS_ENABLED(CONFIG_64BIT) &&
+	    unlikely(folio_large_order(folio) == 1))
 		return 0;
 	return atomic_read(&folio->_entire_mapcount) + 1;
 }
@@ -2037,9 +2061,10 @@ static inline pte_t maybe_mkwrite(pte_t pte, struct vm_area_struct *vma)
 	return pte;
 }
 
-vm_fault_t do_set_pmd(struct vm_fault *vmf, struct folio *folio, struct page *page);
-void set_pte_range(struct vm_fault *vmf, struct folio *folio,
-		struct page *page, unsigned int nr, unsigned long addr);
+vm_fault_t do_set_pmd(struct vm_fault *vmf, struct folio *folio,
+		      struct page *page);
+void set_pte_range(struct vm_fault *vmf, struct folio *folio, struct page *page,
+		   unsigned int nr, unsigned long addr);
 
 vm_fault_t finish_fault(struct vm_fault *vmf);
 #endif
@@ -2106,7 +2131,7 @@ vm_fault_t finish_fault(struct vm_fault *vmf);
 
 /* 127: arbitrary random number, small enough to assemble well */
 #define folio_ref_zero_or_close_to_overflow(folio) \
-	((unsigned int) folio_ref_count(folio) + 127u <= 127u)
+	((unsigned int)folio_ref_count(folio) + 127u <= 127u)
 
 /**
  * folio_get - Increment the reference count on a folio.
@@ -2197,7 +2222,7 @@ typedef union {
 	struct page **pages;
 	struct folio **folios;
 	struct encoded_page **encoded_pages;
-} release_pages_arg __attribute__ ((__transparent_union__));
+} release_pages_arg __attribute__((__transparent_union__));
 
 void release_pages(release_pages_arg, int nr);
 
@@ -2313,7 +2338,7 @@ void unpin_folios(struct folio **folios, unsigned long nfolios);
 static inline bool vma_flags_is_cow_mapping(const vma_flags_t *flags)
 {
 	return vma_flags_test(flags, VMA_MAYWRITE_BIT) &&
-		!vma_flags_test(flags, VMA_SHARED_BIT);
+	       !vma_flags_test(flags, VMA_SHARED_BIT);
 }
 
 /**
@@ -2409,20 +2434,19 @@ static inline int folio_nid(const struct folio *folio)
 
 #ifdef CONFIG_NUMA_BALANCING
 /* page access time bits needs to hold at least 4 seconds */
-#define PAGE_ACCESS_TIME_MIN_BITS	12
+#define PAGE_ACCESS_TIME_MIN_BITS 12
 #if LAST_CPUPID_SHIFT < PAGE_ACCESS_TIME_MIN_BITS
-#define PAGE_ACCESS_TIME_BUCKETS				\
-	(PAGE_ACCESS_TIME_MIN_BITS - LAST_CPUPID_SHIFT)
+#define PAGE_ACCESS_TIME_BUCKETS (PAGE_ACCESS_TIME_MIN_BITS - LAST_CPUPID_SHIFT)
 #else
-#define PAGE_ACCESS_TIME_BUCKETS	0
+#define PAGE_ACCESS_TIME_BUCKETS 0
 #endif
 
-#define PAGE_ACCESS_TIME_MASK				\
-	(LAST_CPUPID_MASK << PAGE_ACCESS_TIME_BUCKETS)
+#define PAGE_ACCESS_TIME_MASK (LAST_CPUPID_MASK << PAGE_ACCESS_TIME_BUCKETS)
 
 static inline int cpu_pid_to_cpupid(int cpu, int pid)
 {
-	return ((cpu & LAST__CPU_MASK) << LAST__PID_SHIFT) | (pid & LAST__PID_MASK);
+	return ((cpu & LAST__CPU_MASK) << LAST__PID_SHIFT) |
+	       (pid & LAST__PID_MASK);
 }
 
 static inline int cpupid_to_pid(int cpupid)
@@ -2488,8 +2512,8 @@ static inline int folio_xchg_access_time(struct folio *folio, int time)
 {
 	int last_time;
 
-	last_time = folio_xchg_last_cpupid(folio,
-					   time >> PAGE_ACCESS_TIME_BUCKETS);
+	last_time =
+		folio_xchg_last_cpupid(folio, time >> PAGE_ACCESS_TIME_BUCKETS);
 	return last_time << PAGE_ACCESS_TIME_BUCKETS;
 }
 
@@ -2498,7 +2522,8 @@ static inline void vma_set_access_pid_bit(struct vm_area_struct *vma)
 	unsigned int pid_bit;
 
 	pid_bit = hash_32(current->pid, ilog2(BITS_PER_LONG));
-	if (vma->numab_state && !test_bit(pid_bit, &vma->numab_state->pids_active[1])) {
+	if (vma->numab_state &&
+	    !test_bit(pid_bit, &vma->numab_state->pids_active[1])) {
 		__set_bit(pid_bit, &vma->numab_state->pids_active[1]);
 	}
 }
@@ -2612,8 +2637,12 @@ static inline u8 page_kasan_tag(const struct page *page)
 	return 0xff;
 }
 
-static inline void page_kasan_tag_set(struct page *page, u8 tag) { }
-static inline void page_kasan_tag_reset(struct page *page) { }
+static inline void page_kasan_tag_set(struct page *page, u8 tag)
+{
+}
+static inline void page_kasan_tag_reset(struct page *page)
+{
+}
 
 #endif /* CONFIG_KASAN_SW_TAGS || CONFIG_KASAN_HW_TAGS */
 
@@ -2776,8 +2805,7 @@ static inline bool folio_maybe_dma_pinned(struct folio *folio)
 	 * Here, for that overflow case, use the sign bit to count a little
 	 * bit higher via unsigned math, and thus still get an accurate result.
 	 */
-	return ((unsigned int)folio_ref_count(folio)) >=
-		GUP_PIN_COUNTING_BIAS;
+	return ((unsigned int)folio_ref_count(folio)) >= GUP_PIN_COUNTING_BIAS;
 }
 
 /*
@@ -2787,7 +2815,7 @@ static inline bool folio_maybe_dma_pinned(struct folio *folio)
  * The caller has to hold the PT lock and the vma->vm_mm->->write_protect_seq.
  */
 static inline bool folio_needs_cow_for_dma(struct vm_area_struct *vma,
-					  struct folio *folio)
+					   struct folio *folio)
 {
 	VM_BUG_ON(!(raw_read_seqcount(&vma->vm_mm->write_protect_seq) & 1));
 
@@ -2846,7 +2874,6 @@ static inline bool folio_is_longterm_pinnable(struct folio *folio)
 
 	/* Otherwise, non-movable zone folios can be pinned. */
 	return !folio_is_zone_movable(folio);
-
 }
 #else
 static inline bool folio_is_longterm_pinnable(struct folio *folio)
@@ -2868,7 +2895,7 @@ static inline void set_page_node(struct page *page, unsigned long node)
 }
 
 static inline void set_page_links(struct page *page, enum zone_type zone,
-	unsigned long node, unsigned long pfn)
+				  unsigned long node, unsigned long pfn)
 {
 	set_page_zone(page, zone);
 	set_page_node(page, node);
@@ -3055,7 +3082,8 @@ static inline int folio_expected_ref_count(const struct folio *folio)
 	const int order = folio_order(folio);
 	int ref_count = 0;
 
-	if (WARN_ON_ONCE(page_has_type(&folio->page) && !folio_test_hugetlb(folio)))
+	if (WARN_ON_ONCE(page_has_type(&folio->page) &&
+			 !folio_test_hugetlb(folio)))
 		return 0;
 
 	/* One reference per page from the swapcache. */
@@ -3097,7 +3125,9 @@ static inline void set_page_address(struct page *page, void *address)
 {
 	page->virtual = address;
 }
-#define page_address_init()  do { } while(0)
+#define page_address_init() \
+	do {                \
+	} while (0)
 #endif
 
 #if defined(HASHED_PAGE_VIRTUAL)
@@ -3113,8 +3143,12 @@ static __always_inline void *lowmem_page_address(const struct page *page)
 
 #if !defined(HASHED_PAGE_VIRTUAL) && !defined(WANT_PAGE_VIRTUAL)
 #define page_address(page) lowmem_page_address(page)
-#define set_page_address(page, address)  do { } while(0)
-#define page_address_init()  do { } while(0)
+#define set_page_address(page, address) \
+	do {                            \
+	} while (0)
+#define page_address_init() \
+	do {                \
+	} while (0)
 #endif
 
 static inline void *folio_address(const struct folio *folio)
@@ -3171,18 +3205,18 @@ static inline void clear_page_pfmemalloc(struct page *page)
  */
 extern void pagefault_out_of_memory(void);
 
-#define offset_in_page(p)	((unsigned long)(p) & ~PAGE_MASK)
+#define offset_in_page(p) ((unsigned long)(p) & ~PAGE_MASK)
 #define offset_in_folio(folio, p) ((unsigned long)(p) & (folio_size(folio) - 1))
 
 /*
  * Parameter block passed down to zap_pte_range in exceptional cases.
  */
 struct zap_details {
-	struct folio *single_folio;	/* Locked folio to be unmapped */
-	bool skip_cows;			/* Do not zap COWed private pages */
-	bool reclaim_pt;		/* Need reclaim page tables? */
-	bool reaping;			/* Reaping, do not block. */
-	zap_flags_t zap_flags;		/* Extra flags for zapping */
+	struct folio *single_folio; /* Locked folio to be unmapped */
+	bool skip_cows; /* Do not zap COWed private pages */
+	bool reclaim_pt; /* Need reclaim page tables? */
+	bool reaping; /* Reaping, do not block. */
+	zap_flags_t zap_flags; /* Extra flags for zapping */
 };
 
 /*
@@ -3191,33 +3225,36 @@ struct zap_details {
  * drop the page in the mm, either by truncation or unmapping of the vma.  By
  * default, the flag is not set.
  */
-#define  ZAP_FLAG_DROP_MARKER        ((__force zap_flags_t) BIT(0))
+#define ZAP_FLAG_DROP_MARKER ((__force zap_flags_t)BIT(0))
 /* Set in unmap_vmas() to indicate a final unmap call.  Only used by hugetlb */
-#define  ZAP_FLAG_UNMAP              ((__force zap_flags_t) BIT(1))
+#define ZAP_FLAG_UNMAP ((__force zap_flags_t)BIT(1))
 
 #ifdef CONFIG_MMU
 extern bool can_do_mlock(void);
 #else
-static inline bool can_do_mlock(void) { return false; }
+static inline bool can_do_mlock(void)
+{
+	return false;
+}
 #endif
 extern int user_shm_lock(size_t, struct ucounts *);
 extern void user_shm_unlock(size_t, struct ucounts *);
 
 struct folio *vm_normal_folio(struct vm_area_struct *vma, unsigned long addr,
-			     pte_t pte);
+			      pte_t pte);
 struct page *vm_normal_page(struct vm_area_struct *vma, unsigned long addr,
-			     pte_t pte);
+			    pte_t pte);
 struct folio *vm_normal_folio_pmd(struct vm_area_struct *vma,
 				  unsigned long addr, pmd_t pmd);
 struct page *vm_normal_page_pmd(struct vm_area_struct *vma, unsigned long addr,
 				pmd_t pmd);
 struct page *vm_normal_page_pud(struct vm_area_struct *vma, unsigned long addr,
-		pud_t pud);
+				pud_t pud);
 
 void zap_special_vma_range(struct vm_area_struct *vma, unsigned long address,
-		  unsigned long size);
-void zap_vma_range(struct vm_area_struct *vma, unsigned long address,
 			   unsigned long size);
+void zap_vma_range(struct vm_area_struct *vma, unsigned long address,
+		   unsigned long size);
 /**
  * zap_vma - zap all page table entries in a vma
  * @vma: The vma to zap.
@@ -3229,9 +3266,10 @@ static inline void zap_vma(struct vm_area_struct *vma)
 struct mmu_notifier_range;
 
 void free_pgd_range(struct mmu_gather *tlb, unsigned long addr,
-		unsigned long end, unsigned long floor, unsigned long ceiling);
-int
-copy_page_range(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma);
+		    unsigned long end, unsigned long floor,
+		    unsigned long ceiling);
+int copy_page_range(struct vm_area_struct *dst_vma,
+		    struct vm_area_struct *src_vma);
 int generic_access_phys(struct vm_area_struct *vma, unsigned long addr,
 			void *buf, int len, int write);
 
@@ -3273,25 +3311,26 @@ extern void truncate_setsize(struct inode *inode, loff_t newsize);
 void pagecache_isize_extended(struct inode *inode, loff_t from, loff_t to);
 void truncate_pagecache_range(struct inode *inode, loff_t offset, loff_t end);
 int generic_error_remove_folio(struct address_space *mapping,
-		struct folio *folio);
+			       struct folio *folio);
 
 struct vm_area_struct *lock_mm_and_find_vma(struct mm_struct *mm,
-		unsigned long address, struct pt_regs *regs);
+					    unsigned long address,
+					    struct pt_regs *regs);
 
 #ifdef CONFIG_MMU
 extern vm_fault_t handle_mm_fault(struct vm_area_struct *vma,
 				  unsigned long address, unsigned int flags,
 				  struct pt_regs *regs);
-extern int fixup_user_fault(struct mm_struct *mm,
-			    unsigned long address, unsigned int fault_flags,
-			    bool *unlocked);
-void unmap_mapping_pages(struct address_space *mapping,
-		pgoff_t start, pgoff_t nr, bool even_cows);
-void unmap_mapping_range(struct address_space *mapping,
-		loff_t const holebegin, loff_t const holelen, int even_cows);
+extern int fixup_user_fault(struct mm_struct *mm, unsigned long address,
+			    unsigned int fault_flags, bool *unlocked);
+void unmap_mapping_pages(struct address_space *mapping, pgoff_t start,
+			 pgoff_t nr, bool even_cows);
+void unmap_mapping_range(struct address_space *mapping, loff_t const holebegin,
+			 loff_t const holelen, int even_cows);
 #else
 static inline vm_fault_t handle_mm_fault(struct vm_area_struct *vma,
-					 unsigned long address, unsigned int flags,
+					 unsigned long address,
+					 unsigned int flags,
 					 struct pt_regs *regs)
 {
 	/* should never happen if there's no MMU */
@@ -3299,20 +3338,27 @@ static inline vm_fault_t handle_mm_fault(struct vm_area_struct *vma,
 	return VM_FAULT_SIGBUS;
 }
 static inline int fixup_user_fault(struct mm_struct *mm, unsigned long address,
-		unsigned int fault_flags, bool *unlocked)
+				   unsigned int fault_flags, bool *unlocked)
 {
 	/* should never happen if there's no MMU */
 	BUG();
 	return -EFAULT;
 }
 static inline void unmap_mapping_pages(struct address_space *mapping,
-		pgoff_t start, pgoff_t nr, bool even_cows) { }
+				       pgoff_t start, pgoff_t nr,
+				       bool even_cows)
+{
+}
 static inline void unmap_mapping_range(struct address_space *mapping,
-		loff_t const holebegin, loff_t const holelen, int even_cows) { }
+				       loff_t const holebegin,
+				       loff_t const holelen, int even_cows)
+{
+}
 #endif
 
 static inline void unmap_shared_mapping_range(struct address_space *mapping,
-		loff_t const holebegin, loff_t const holelen)
+					      loff_t const holebegin,
+					      loff_t const holelen)
 {
 	unmap_mapping_range(mapping, holebegin, holelen, 0);
 }
@@ -3321,31 +3367,28 @@ static inline struct vm_area_struct *vma_lookup(struct mm_struct *mm,
 						unsigned long addr);
 
 extern int access_process_vm(struct task_struct *tsk, unsigned long addr,
-		void *buf, int len, unsigned int gup_flags);
-extern int access_remote_vm(struct mm_struct *mm, unsigned long addr,
-		void *buf, int len, unsigned int gup_flags);
+			     void *buf, int len, unsigned int gup_flags);
+extern int access_remote_vm(struct mm_struct *mm, unsigned long addr, void *buf,
+			    int len, unsigned int gup_flags);
 
 #ifdef CONFIG_BPF_SYSCALL
 extern int copy_remote_vm_str(struct task_struct *tsk, unsigned long addr,
 			      void *buf, int len, unsigned int gup_flags);
 #endif
 
-long get_user_pages_remote(struct mm_struct *mm,
-			   unsigned long start, unsigned long nr_pages,
-			   unsigned int gup_flags, struct page **pages,
-			   int *locked);
-long pin_user_pages_remote(struct mm_struct *mm,
-			   unsigned long start, unsigned long nr_pages,
-			   unsigned int gup_flags, struct page **pages,
-			   int *locked);
+long get_user_pages_remote(struct mm_struct *mm, unsigned long start,
+			   unsigned long nr_pages, unsigned int gup_flags,
+			   struct page **pages, int *locked);
+long pin_user_pages_remote(struct mm_struct *mm, unsigned long start,
+			   unsigned long nr_pages, unsigned int gup_flags,
+			   struct page **pages, int *locked);
 
 /*
  * Retrieves a single page alongside its VMA. Does not support FOLL_NOWAIT.
  */
-static inline struct page *get_user_page_vma_remote(struct mm_struct *mm,
-						    unsigned long addr,
-						    int gup_flags,
-						    struct vm_area_struct **vmap)
+static inline struct page *
+get_user_page_vma_remote(struct mm_struct *mm, unsigned long addr,
+			 int gup_flags, struct vm_area_struct **vmap)
 {
 	struct page *page;
 	struct vm_area_struct *vma;
@@ -3374,9 +3417,9 @@ long get_user_pages(unsigned long start, unsigned long nr_pages,
 long pin_user_pages(unsigned long start, unsigned long nr_pages,
 		    unsigned int gup_flags, struct page **pages);
 long get_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
-		    struct page **pages, unsigned int gup_flags);
+			     struct page **pages, unsigned int gup_flags);
 long pin_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
-		    struct page **pages, unsigned int gup_flags);
+			     struct page **pages, unsigned int gup_flags);
 long memfd_pin_folios(struct file *memfd, loff_t start, loff_t end,
 		      struct folio **folios, unsigned int max_folios,
 		      pgoff_t *offset);
@@ -3413,19 +3456,17 @@ int get_cmdline(struct task_struct *task, char *buffer, int buflen);
  * because something (e.g., COW, uffd-wp) blocks that from happening for all
  * PTEs automatically in a writable mapping.
  */
-#define  MM_CP_TRY_CHANGE_WRITABLE	   (1UL << 0)
+#define MM_CP_TRY_CHANGE_WRITABLE (1UL << 0)
 /* Whether this protection change is for NUMA hints */
-#define  MM_CP_PROT_NUMA                   (1UL << 1)
+#define MM_CP_PROT_NUMA (1UL << 1)
 /* Whether this change is for write protecting */
-#define  MM_CP_UFFD_WP                     (1UL << 2) /* do wp */
-#define  MM_CP_UFFD_WP_RESOLVE             (1UL << 3) /* Resolve wp */
-#define  MM_CP_UFFD_WP_ALL                 (MM_CP_UFFD_WP | \
-					    MM_CP_UFFD_WP_RESOLVE)
+#define MM_CP_UFFD_WP (1UL << 2) /* do wp */
+#define MM_CP_UFFD_WP_RESOLVE (1UL << 3) /* Resolve wp */
+#define MM_CP_UFFD_WP_ALL (MM_CP_UFFD_WP | MM_CP_UFFD_WP_RESOLVE)
 /* Whether this change is for uffd RWP */
-#define  MM_CP_UFFD_RWP                    (1UL << 4) /* do rwp */
-#define  MM_CP_UFFD_RWP_RESOLVE            (1UL << 5) /* resolve rwp */
-#define  MM_CP_UFFD_RWP_ALL                (MM_CP_UFFD_RWP | \
-					    MM_CP_UFFD_RWP_RESOLVE)
+#define MM_CP_UFFD_RWP (1UL << 4) /* do rwp */
+#define MM_CP_UFFD_RWP_RESOLVE (1UL << 5) /* resolve rwp */
+#define MM_CP_UFFD_RWP_ALL (MM_CP_UFFD_RWP | MM_CP_UFFD_RWP_RESOLVE)
 
 bool can_change_pte_writable(struct vm_area_struct *vma, unsigned long addr,
 			     pte_t pte);
@@ -3433,8 +3474,9 @@ extern long change_protection(struct mmu_gather *tlb,
 			      struct vm_area_struct *vma, unsigned long start,
 			      unsigned long end, unsigned long cp_flags);
 extern int mprotect_fixup(struct vma_iterator *vmi, struct mmu_gather *tlb,
-	  struct vm_area_struct *vma, struct vm_area_struct **pprev,
-	  unsigned long start, unsigned long end, vm_flags_t newflags);
+			  struct vm_area_struct *vma,
+			  struct vm_area_struct **pprev, unsigned long start,
+			  unsigned long end, vm_flags_t newflags);
 
 /*
  * doesn't attempt to fault and will return short.
@@ -3443,7 +3485,8 @@ int get_user_pages_fast_only(unsigned long start, int nr_pages,
 			     unsigned int gup_flags, struct page **pages);
 
 static inline bool get_user_page_fast_only(unsigned long addr,
-			unsigned int gup_flags, struct page **pagep)
+					   unsigned int gup_flags,
+					   struct page **pagep)
 {
 	return get_user_pages_fast_only(addr, 1, gup_flags, pagep) == 1;
 }
@@ -3501,15 +3544,15 @@ static inline int mm_counter(struct folio *folio)
 static inline unsigned long get_mm_rss(struct mm_struct *mm)
 {
 	return get_mm_counter(mm, MM_FILEPAGES) +
-		get_mm_counter(mm, MM_ANONPAGES) +
-		get_mm_counter(mm, MM_SHMEMPAGES);
+	       get_mm_counter(mm, MM_ANONPAGES) +
+	       get_mm_counter(mm, MM_SHMEMPAGES);
 }
 
 static inline unsigned long get_mm_rss_sum(struct mm_struct *mm)
 {
 	return get_mm_counter_sum(mm, MM_FILEPAGES) +
-		get_mm_counter_sum(mm, MM_ANONPAGES) +
-		get_mm_counter_sum(mm, MM_SHMEMPAGES);
+	       get_mm_counter_sum(mm, MM_ANONPAGES) +
+	       get_mm_counter_sum(mm, MM_SHMEMPAGES);
 }
 
 static inline unsigned long get_mm_hiwater_rss(struct mm_struct *mm)
@@ -3572,7 +3615,7 @@ static inline pmd_t pmd_mkspecial(pmd_t pmd)
 {
 	return pmd;
 }
-#endif	/* CONFIG_ARCH_SUPPORTS_PMD_PFNMAP */
+#endif /* CONFIG_ARCH_SUPPORTS_PMD_PFNMAP */
 
 #ifndef CONFIG_ARCH_SUPPORTS_PUD_PFNMAP
 static inline bool pud_special(pud_t pud)
@@ -3584,14 +3627,14 @@ static inline pud_t pud_mkspecial(pud_t pud)
 {
 	return pud;
 }
-#endif	/* CONFIG_ARCH_SUPPORTS_PUD_PFNMAP */
+#endif /* CONFIG_ARCH_SUPPORTS_PUD_PFNMAP */
 
 extern pte_t *get_locked_pte(struct mm_struct *mm, unsigned long addr,
 			     spinlock_t **ptl);
 
 #ifdef __PAGETABLE_P4D_FOLDED
 static inline int __p4d_alloc(struct mm_struct *mm, pgd_t *pgd,
-						unsigned long address)
+			      unsigned long address)
 {
 	return 0;
 }
@@ -3601,12 +3644,16 @@ int __p4d_alloc(struct mm_struct *mm, pgd_t *pgd, unsigned long address);
 
 #if defined(__PAGETABLE_PUD_FOLDED) || !defined(CONFIG_MMU)
 static inline int __pud_alloc(struct mm_struct *mm, p4d_t *p4d,
-						unsigned long address)
+			      unsigned long address)
 {
 	return 0;
 }
-static inline void mm_inc_nr_puds(struct mm_struct *mm) {}
-static inline void mm_dec_nr_puds(struct mm_struct *mm) {}
+static inline void mm_inc_nr_puds(struct mm_struct *mm)
+{
+}
+static inline void mm_dec_nr_puds(struct mm_struct *mm)
+{
+}
 
 #else
 int __pud_alloc(struct mm_struct *mm, p4d_t *p4d, unsigned long address);
@@ -3628,13 +3675,17 @@ static inline void mm_dec_nr_puds(struct mm_struct *mm)
 
 #if defined(__PAGETABLE_PMD_FOLDED) || !defined(CONFIG_MMU)
 static inline int __pmd_alloc(struct mm_struct *mm, pud_t *pud,
-						unsigned long address)
+			      unsigned long address)
 {
 	return 0;
 }
 
-static inline void mm_inc_nr_pmds(struct mm_struct *mm) {}
-static inline void mm_dec_nr_pmds(struct mm_struct *mm) {}
+static inline void mm_inc_nr_pmds(struct mm_struct *mm)
+{
+}
+static inline void mm_dec_nr_pmds(struct mm_struct *mm)
+{
+}
 
 #else
 int __pmd_alloc(struct mm_struct *mm, pud_t *pud, unsigned long address);
@@ -3676,14 +3727,20 @@ static inline void mm_dec_nr_ptes(struct mm_struct *mm)
 }
 #else
 
-static inline void mm_pgtables_bytes_init(struct mm_struct *mm) {}
+static inline void mm_pgtables_bytes_init(struct mm_struct *mm)
+{
+}
 static inline unsigned long mm_pgtables_bytes(const struct mm_struct *mm)
 {
 	return 0;
 }
 
-static inline void mm_inc_nr_ptes(struct mm_struct *mm) {}
-static inline void mm_dec_nr_ptes(struct mm_struct *mm) {}
+static inline void mm_inc_nr_ptes(struct mm_struct *mm)
+{
+}
+static inline void mm_dec_nr_ptes(struct mm_struct *mm)
+{
+}
 #endif
 
 int __pte_alloc(struct mm_struct *mm, pmd_t *pmd);
@@ -3692,23 +3749,27 @@ int __pte_alloc_kernel(pmd_t *pmd);
 #if defined(CONFIG_MMU)
 
 static inline p4d_t *p4d_alloc(struct mm_struct *mm, pgd_t *pgd,
-		unsigned long address)
+			       unsigned long address)
 {
 	return (unlikely(pgd_none(*pgd)) && __p4d_alloc(mm, pgd, address)) ?
-		NULL : p4d_offset(pgd, address);
+			     NULL :
+			     p4d_offset(pgd, address);
 }
 
 static inline pud_t *pud_alloc(struct mm_struct *mm, p4d_t *p4d,
-		unsigned long address)
+			       unsigned long address)
 {
 	return (unlikely(p4d_none(*p4d)) && __pud_alloc(mm, p4d, address)) ?
-		NULL : pud_offset(p4d, address);
+			     NULL :
+			     pud_offset(p4d, address);
 }
 
-static inline pmd_t *pmd_alloc(struct mm_struct *mm, pud_t *pud, unsigned long address)
+static inline pmd_t *pmd_alloc(struct mm_struct *mm, pud_t *pud,
+			       unsigned long address)
 {
-	return (unlikely(pud_none(*pud)) && __pmd_alloc(mm, pud, address))?
-		NULL: pmd_offset(pud, address);
+	return (unlikely(pud_none(*pud)) && __pmd_alloc(mm, pud, address)) ?
+			     NULL :
+			     pmd_offset(pud, address);
 }
 #endif /* CONFIG_MMU */
 
@@ -3789,13 +3850,14 @@ static inline bool ptdesc_test_kernel(const struct ptdesc *ptdesc)
  *
  * Return: The ptdesc describing the allocated page tables.
  */
-static inline struct ptdesc *pagetable_alloc_noprof(gfp_t gfp, unsigned int order)
+static inline struct ptdesc *pagetable_alloc_noprof(gfp_t gfp,
+						    unsigned int order)
 {
 	struct page *page = alloc_pages_noprof(gfp | __GFP_COMP, order);
 
 	return page_ptdesc(page);
 }
-#define pagetable_alloc(...)	alloc_hooks(pagetable_alloc_noprof(__VA_ARGS__))
+#define pagetable_alloc(...) alloc_hooks(pagetable_alloc_noprof(__VA_ARGS__))
 
 static inline void __pagetable_free(struct ptdesc *pt)
 {
@@ -3887,7 +3949,7 @@ static inline bool ptlock_init(struct ptdesc *ptdesc)
 	return true;
 }
 
-#else	/* !defined(CONFIG_SPLIT_PTE_PTLOCKS) */
+#else /* !defined(CONFIG_SPLIT_PTE_PTLOCKS) */
 /*
  * We use mm->page_table_lock to guard all pagetable pages of the mm.
  */
@@ -3899,9 +3961,16 @@ static inline spinlock_t *ptep_lockptr(struct mm_struct *mm, pte_t *pte)
 {
 	return &mm->page_table_lock;
 }
-static inline void ptlock_cache_init(void) {}
-static inline bool ptlock_init(struct ptdesc *ptdesc) { return true; }
-static inline void ptlock_free(struct ptdesc *ptdesc) {}
+static inline void ptlock_cache_init(void)
+{
+}
+static inline bool ptlock_init(struct ptdesc *ptdesc)
+{
+	return true;
+}
+static inline void ptlock_free(struct ptdesc *ptdesc)
+{
+}
 #endif /* defined(CONFIG_SPLIT_PTE_PTLOCKS) */
 
 static inline void __pagetable_ctor(struct ptdesc *ptdesc)
@@ -3943,8 +4012,8 @@ static inline pte_t *pte_offset_map(pmd_t *pmd, unsigned long addr)
 	return __pte_offset_map(pmd, addr, NULL);
 }
 
-pte_t *pte_offset_map_lock(struct mm_struct *mm, pmd_t *pmd,
-			   unsigned long addr, spinlock_t **ptlp);
+pte_t *pte_offset_map_lock(struct mm_struct *mm, pmd_t *pmd, unsigned long addr,
+			   spinlock_t **ptlp);
 
 pte_t *pte_offset_map_ro_nolock(struct mm_struct *mm, pmd_t *pmd,
 				unsigned long addr, spinlock_t **ptlp);
@@ -3952,30 +4021,32 @@ pte_t *pte_offset_map_rw_nolock(struct mm_struct *mm, pmd_t *pmd,
 				unsigned long addr, pmd_t *pmdvalp,
 				spinlock_t **ptlp);
 
-#define pte_unmap_unlock(pte, ptl)	do {		\
-	spin_unlock(ptl);				\
-	pte_unmap(pte);					\
-} while (0)
+#define pte_unmap_unlock(pte, ptl) \
+	do {                       \
+		spin_unlock(ptl);  \
+		pte_unmap(pte);    \
+	} while (0)
 
 #define pte_alloc(mm, pmd) (unlikely(pmd_none(*(pmd))) && __pte_alloc(mm, pmd))
 
-#define pte_alloc_map(mm, pmd, address)			\
+#define pte_alloc_map(mm, pmd, address) \
 	(pte_alloc(mm, pmd) ? NULL : pte_offset_map(pmd, address))
 
-#define pte_alloc_map_lock(mm, pmd, address, ptlp)	\
-	(pte_alloc(mm, pmd) ?			\
-		 NULL : pte_offset_map_lock(mm, pmd, address, ptlp))
+#define pte_alloc_map_lock(mm, pmd, address, ptlp) \
+	(pte_alloc(mm, pmd) ? NULL :               \
+				    pte_offset_map_lock(mm, pmd, address, ptlp))
 
-#define pte_alloc_kernel(pmd, address)			\
-	((unlikely(pmd_none(*(pmd))) && __pte_alloc_kernel(pmd))? \
-		NULL: pte_offset_kernel(pmd, address))
+#define pte_alloc_kernel(pmd, address)                             \
+	((unlikely(pmd_none(*(pmd))) && __pte_alloc_kernel(pmd)) ? \
+		       NULL :                                            \
+		       pte_offset_kernel(pmd, address))
 
 #if defined(CONFIG_SPLIT_PMD_PTLOCKS)
 
 static inline struct page *pmd_pgtable_page(pmd_t *pmd)
 {
 	unsigned long mask = ~(PTRS_PER_PMD * sizeof(pmd_t) - 1);
-	return virt_to_page((void *)((unsigned long) pmd & mask));
+	return virt_to_page((void *)((unsigned long)pmd & mask));
 }
 
 static inline struct ptdesc *pmd_ptdesc(pmd_t *pmd)
@@ -4005,7 +4076,10 @@ static inline spinlock_t *pmd_lockptr(struct mm_struct *mm, pmd_t *pmd)
 	return &mm->page_table_lock;
 }
 
-static inline bool pmd_ptlock_init(struct ptdesc *ptdesc) { return true; }
+static inline bool pmd_ptlock_init(struct ptdesc *ptdesc)
+{
+	return true;
+}
 
 #define pmd_huge_pte(mm, pmd) ((mm)->pmd_huge_pte)
 
@@ -4071,8 +4145,8 @@ extern void free_initmem(void);
  * "poison" if it's within range [0, UCHAR_MAX].
  * Return pages freed into the buddy system.
  */
-extern unsigned long free_reserved_area(void *start, void *end,
-					int poison, const char *s);
+extern unsigned long free_reserved_area(void *start, void *end, int poison,
+					const char *s);
 
 extern void adjust_managed_page_count(struct page *page, long count);
 
@@ -4104,8 +4178,8 @@ static inline unsigned long free_initmem_default(int poison)
 {
 	extern char __init_begin[], __init_end[];
 
-	return free_reserved_area(&__init_begin, &__init_end,
-				  poison, "unused kernel image (initmem)");
+	return free_reserved_area(&__init_begin, &__init_end, poison,
+				  "unused kernel image (initmem)");
 }
 
 static inline unsigned long get_num_physpages(void)
@@ -4138,9 +4212,9 @@ static inline unsigned long get_num_physpages(void)
 void arch_zone_limits_init(unsigned long *max_zone_pfn);
 unsigned long node_map_pfn_alignment(void);
 extern unsigned long absent_pages_in_range(unsigned long start_pfn,
-						unsigned long end_pfn);
-extern void get_pfn_range_for_nid(unsigned int nid,
-			unsigned long *start_pfn, unsigned long *end_pfn);
+					   unsigned long end_pfn);
+extern void get_pfn_range_for_nid(unsigned int nid, unsigned long *start_pfn,
+				  unsigned long *end_pfn);
 
 #ifndef CONFIG_NUMA
 static inline int early_pfn_to_nid(unsigned long pfn)
@@ -4155,17 +4229,19 @@ extern int __meminit early_pfn_to_nid(unsigned long pfn);
 extern void mem_init(void);
 extern void __init mmap_init(void);
 
-extern void __show_mem(unsigned int flags, const nodemask_t *nodemask, int max_zone_idx);
+extern void __show_mem(unsigned int flags, const nodemask_t *nodemask,
+		       int max_zone_idx);
 static inline void show_mem(void)
 {
 	__show_mem(0, NULL, MAX_NR_ZONES - 1);
 }
 extern long si_mem_available(void);
-extern void si_meminfo(struct sysinfo * val);
+extern void si_meminfo(struct sysinfo *val);
 extern void si_meminfo_node(struct sysinfo *val, int nid);
 
-extern __printf(3, 4)
-void warn_alloc(gfp_t gfp_mask, const nodemask_t *nodemask, const char *fmt, ...);
+extern __printf(3, 4) void warn_alloc(gfp_t gfp_mask,
+				      const nodemask_t *nodemask,
+				      const char *fmt, ...);
 
 extern void setup_per_cpu_pageset(void);
 
@@ -4182,46 +4258,48 @@ void mapping_rmap_tree_insert_after(struct vm_area_struct *vma,
 void mapping_rmap_tree_remove(struct vm_area_struct *vma,
 			      struct address_space *mapping);
 struct vm_area_struct *
-mapping_rmap_tree_iter_first(struct address_space *mapping,
-			     pgoff_t pgoff_start, pgoff_t pgoff_last);
-struct vm_area_struct *
-mapping_rmap_tree_iter_next(struct vm_area_struct *vma,
-			    pgoff_t pgoff_start, pgoff_t pgoff_last);
+mapping_rmap_tree_iter_first(struct address_space *mapping, pgoff_t pgoff_start,
+			     pgoff_t pgoff_last);
+struct vm_area_struct *mapping_rmap_tree_iter_next(struct vm_area_struct *vma,
+						   pgoff_t pgoff_start,
+						   pgoff_t pgoff_last);
 
 #define mapping_rmap_tree_foreach(vma, mapping, pgoff_start, pgoff_last) \
-	for (vma = mapping_rmap_tree_iter_first(mapping, pgoff_start,	 \
-						pgoff_last);		 \
-	     vma; vma = mapping_rmap_tree_iter_next(vma, pgoff_start,	 \
-						    pgoff_last))
+	for (vma = mapping_rmap_tree_iter_first(mapping, pgoff_start,    \
+						pgoff_last);             \
+	     vma;                                                        \
+	     vma = mapping_rmap_tree_iter_next(vma, pgoff_start, pgoff_last))
 
 void anon_rmap_tree_insert(struct anon_vma_chain *avc,
 			   struct anon_vma *anon_vma);
 void anon_rmap_tree_remove(struct anon_vma_chain *avc,
 			   struct anon_vma *anon_vma);
-struct anon_vma_chain *
-anon_rmap_tree_iter_first(struct anon_vma *anon_vma,
-			  pgoff_t pgoff_start, pgoff_t pgoff_last);
-struct anon_vma_chain *
-anon_rmap_tree_iter_next(struct anon_vma_chain *avc,
-			 pgoff_t pgoff_start, pgoff_t pgoff_last);
+struct anon_vma_chain *anon_rmap_tree_iter_first(struct anon_vma *anon_vma,
+						 pgoff_t pgoff_start,
+						 pgoff_t pgoff_last);
+struct anon_vma_chain *anon_rmap_tree_iter_next(struct anon_vma_chain *avc,
+						pgoff_t pgoff_start,
+						pgoff_t pgoff_last);
 #ifdef CONFIG_DEBUG_VM_RB
 void anon_rmap_tree_verify(struct anon_vma_chain *avc);
 #endif
 
-#define anon_rmap_tree_foreach(avc, anon_vma, pgoff_start, pgoff_last)		 \
-	for (avc = anon_rmap_tree_iter_first(anon_vma, pgoff_start, pgoff_last); \
-	     avc; avc = anon_rmap_tree_iter_next(avc, pgoff_start, pgoff_last))
+#define anon_rmap_tree_foreach(avc, anon_vma, pgoff_start, pgoff_last) \
+	for (avc = anon_rmap_tree_iter_first(anon_vma, pgoff_start,    \
+					     pgoff_last);              \
+	     avc;                                                      \
+	     avc = anon_rmap_tree_iter_next(avc, pgoff_start, pgoff_last))
 
 /* mmap.c */
-extern int __vm_enough_memory(const struct mm_struct *mm, long pages, int cap_sys_admin);
+extern int __vm_enough_memory(const struct mm_struct *mm, long pages,
+			      int cap_sys_admin);
 extern void exit_mmap(struct mm_struct *);
-bool mmap_read_lock_maybe_expand(struct mm_struct *mm, struct vm_area_struct *vma,
-				 unsigned long addr, bool write);
+bool mmap_read_lock_maybe_expand(struct mm_struct *mm,
+				 struct vm_area_struct *vma, unsigned long addr,
+				 bool write);
 
-static inline int check_data_rlimit(unsigned long rlim,
-				    unsigned long new,
-				    unsigned long start,
-				    unsigned long end_data,
+static inline int check_data_rlimit(unsigned long rlim, unsigned long new,
+				    unsigned long start, unsigned long end_data,
 				    unsigned long start_data)
 {
 	if (rlim < RLIM_INFINITY) {
@@ -4244,18 +4322,17 @@ extern void vm_stat_account(struct mm_struct *, vm_flags_t, long npages);
 
 extern bool vma_is_special_mapping(const struct vm_area_struct *vma,
 				   const struct vm_special_mapping *sm);
-struct vm_area_struct *_install_special_mapping(struct mm_struct *mm,
-				   unsigned long addr, unsigned long len,
-				   vm_flags_t vm_flags,
-				   const struct vm_special_mapping *spec);
+struct vm_area_struct *
+_install_special_mapping(struct mm_struct *mm, unsigned long addr,
+			 unsigned long len, vm_flags_t vm_flags,
+			 const struct vm_special_mapping *spec);
 
 unsigned long randomize_stack_top(unsigned long stack_top);
 unsigned long randomize_page(unsigned long start, unsigned long range);
 
-unsigned long
-__get_unmapped_area(struct file *file, unsigned long addr, unsigned long len,
-		    unsigned long pgoff, unsigned long flags,
-		    vma_flags_t vma_flags);
+unsigned long __get_unmapped_area(struct file *file, unsigned long addr,
+				  unsigned long len, unsigned long pgoff,
+				  unsigned long flags, vma_flags_t vma_flags);
 
 static inline unsigned long
 get_unmapped_area(struct file *file, unsigned long addr, unsigned long len,
@@ -4265,19 +4342,20 @@ get_unmapped_area(struct file *file, unsigned long addr, unsigned long len,
 				   EMPTY_VMA_FLAGS);
 }
 
-unsigned long do_mmap(struct file *file, unsigned long addr,
-	unsigned long len, unsigned long prot, unsigned long flags,
-	vma_flags_t vma_flags, unsigned long pgoff, unsigned long *populate,
-	struct list_head *uf);
+unsigned long do_mmap(struct file *file, unsigned long addr, unsigned long len,
+		      unsigned long prot, unsigned long flags,
+		      vma_flags_t vma_flags, unsigned long pgoff,
+		      unsigned long *populate, struct list_head *uf);
 extern int do_vmi_munmap(struct vma_iterator *vmi, struct mm_struct *mm,
 			 unsigned long start, size_t len, struct list_head *uf,
 			 bool unlock);
 int do_vmi_align_munmap(struct vma_iterator *vmi, struct vm_area_struct *vma,
-		    struct mm_struct *mm, unsigned long start,
-		    unsigned long end, struct list_head *uf, bool unlock);
+			struct mm_struct *mm, unsigned long start,
+			unsigned long end, struct list_head *uf, bool unlock);
 extern int do_munmap(struct mm_struct *, unsigned long, size_t,
 		     struct list_head *uf);
-extern int do_madvise(struct mm_struct *mm, unsigned long start, size_t len_in, int behavior);
+extern int do_madvise(struct mm_struct *mm, unsigned long start, size_t len_in,
+		      int behavior);
 
 #ifdef CONFIG_MMU
 extern int __mm_populate(unsigned long addr, unsigned long len,
@@ -4285,20 +4363,24 @@ extern int __mm_populate(unsigned long addr, unsigned long len,
 static inline void mm_populate(unsigned long addr, unsigned long len)
 {
 	/* Ignore errors */
-	(void) __mm_populate(addr, len, 1);
+	(void)__mm_populate(addr, len, 1);
 }
 #else
-static inline void mm_populate(unsigned long addr, unsigned long len) {}
+static inline void mm_populate(unsigned long addr, unsigned long len)
+{
+}
 #endif
 
 /* This takes the mm semaphore itself */
-int __must_check vm_brk_flags(unsigned long addr, unsigned long request, bool is_exec);
+int __must_check vm_brk_flags(unsigned long addr, unsigned long request,
+			      bool is_exec);
 int vm_munmap(unsigned long start, size_t len);
 unsigned long __must_check vm_mmap(struct file *file, unsigned long addr,
-		unsigned long len, unsigned long prot,
-		unsigned long flag, unsigned long offset);
+				   unsigned long len, unsigned long prot,
+				   unsigned long flag, unsigned long offset);
 unsigned long __must_check vm_mmap_shadow_stack(unsigned long addr,
-		unsigned long len, unsigned long flags);
+						unsigned long len,
+						unsigned long flags);
 
 struct vm_unmapped_area_info {
 #define VM_UNMAPPED_AREA_TOPDOWN 1
@@ -4316,31 +4398,34 @@ extern unsigned long vm_unmapped_area(struct vm_unmapped_area_info *info);
 /* truncate.c */
 void truncate_inode_pages(struct address_space *mapping, loff_t lstart);
 void truncate_inode_pages_range(struct address_space *mapping, loff_t lstart,
-		uoff_t lend);
+				uoff_t lend);
 void truncate_inode_pages_final(struct address_space *mapping);
 
 /* generic vm_area_ops exported for stackable file systems */
 extern vm_fault_t filemap_fault(struct vm_fault *vmf);
-extern vm_fault_t filemap_map_pages(struct vm_fault *vmf,
-		pgoff_t start_pgoff, pgoff_t end_pgoff);
+extern vm_fault_t filemap_map_pages(struct vm_fault *vmf, pgoff_t start_pgoff,
+				    pgoff_t end_pgoff);
 extern vm_fault_t filemap_page_mkwrite(struct vm_fault *vmf);
 
 extern unsigned long stack_guard_gap;
 /* Generic expand stack which grows the stack according to GROWS{UP,DOWN} */
 int expand_stack_locked(struct vm_area_struct *vma, unsigned long address);
-struct vm_area_struct *expand_stack(struct mm_struct * mm, unsigned long addr);
+struct vm_area_struct *expand_stack(struct mm_struct *mm, unsigned long addr);
 
 /* Look up the first VMA which satisfies  addr < vm_end,  NULL if none. */
-extern struct vm_area_struct * find_vma(struct mm_struct * mm, unsigned long addr);
-extern struct vm_area_struct * find_vma_prev(struct mm_struct * mm, unsigned long addr,
-					     struct vm_area_struct **pprev);
+extern struct vm_area_struct *find_vma(struct mm_struct *mm,
+				       unsigned long addr);
+extern struct vm_area_struct *find_vma_prev(struct mm_struct *mm,
+					    unsigned long addr,
+					    struct vm_area_struct **pprev);
 
 /*
  * Look up the first VMA which intersects the interval [start_addr, end_addr)
  * NULL if none.  Assume start_addr < end_addr.
  */
 struct vm_area_struct *find_vma_intersection(struct mm_struct *mm,
-			unsigned long start_addr, unsigned long end_addr);
+					     unsigned long start_addr,
+					     unsigned long end_addr);
 
 /**
  * vma_lookup() - Find a VMA at a specific address
@@ -4349,13 +4434,14 @@ struct vm_area_struct *find_vma_intersection(struct mm_struct *mm,
  *
  * Return: The vm_area_struct at the given address, %NULL otherwise.
  */
-static inline
-struct vm_area_struct *vma_lookup(struct mm_struct *mm, unsigned long addr)
+static inline struct vm_area_struct *vma_lookup(struct mm_struct *mm,
+						unsigned long addr)
 {
 	return mtree_load(&mm->mm_mt, addr);
 }
 
-static inline unsigned long stack_guard_start_gap(const struct vm_area_struct *vma)
+static inline unsigned long
+stack_guard_start_gap(const struct vm_area_struct *vma)
 {
 	if (vma->vm_flags & VM_GROWSDOWN)
 		return stack_guard_gap;
@@ -4622,8 +4708,9 @@ static inline void mmap_action_simple_ioremap(struct vm_area_desc *desc,
  * @nr_pages: The number of entries in the @pages aray.
  */
 static inline void mmap_action_map_kernel_pages(struct vm_area_desc *desc,
-		unsigned long start, struct page **pages,
-		unsigned long nr_pages)
+						unsigned long start,
+						struct page **pages,
+						unsigned long nr_pages)
 {
 	struct mmap_action *action = &desc->action;
 
@@ -4645,19 +4732,20 @@ static inline void mmap_action_map_kernel_pages(struct vm_area_desc *desc,
  * entire range described by @desc.
  */
 static inline void mmap_action_map_kernel_pages_full(struct vm_area_desc *desc,
-		struct page **pages)
+						     struct page **pages)
 {
 	mmap_action_map_kernel_pages(desc, desc->start, pages,
 				     vma_desc_pages(desc));
 }
 
 int mmap_action_prepare(struct vm_area_desc *desc);
-int mmap_action_complete(struct vm_area_struct *vma,
-			 struct mmap_action *action, bool is_compat);
+int mmap_action_complete(struct vm_area_struct *vma, struct mmap_action *action,
+			 bool is_compat);
 
 /* Look up the first VMA which exactly match the interval vm_start ... vm_end */
 static inline struct vm_area_struct *find_exact_vma(struct mm_struct *mm,
-				unsigned long vm_start, unsigned long vm_end)
+						    unsigned long vm_start,
+						    unsigned long vm_end)
 {
 	struct vm_area_struct *vma = vma_lookup(mm, vm_start);
 
@@ -4760,39 +4848,40 @@ static inline void vma_set_page_prot(struct vm_area_struct *vma)
 void vma_set_file(struct vm_area_struct *vma, struct file *file);
 
 #ifdef CONFIG_NUMA_BALANCING
-unsigned long change_prot_numa(struct vm_area_struct *vma,
-			unsigned long start, unsigned long end);
+unsigned long change_prot_numa(struct vm_area_struct *vma, unsigned long start,
+			       unsigned long end);
 #endif
 
 struct vm_area_struct *find_extend_vma_locked(struct mm_struct *,
-		unsigned long addr);
+					      unsigned long addr);
 int remap_pfn_range(struct vm_area_struct *vma, unsigned long addr,
 		    unsigned long pfn, unsigned long size, pgprot_t pgprot);
 
 int vm_insert_page(struct vm_area_struct *, unsigned long addr, struct page *);
 int vm_insert_pages(struct vm_area_struct *vma, unsigned long addr,
-			struct page **pages, unsigned long *num);
+		    struct page **pages, unsigned long *num);
 int map_kernel_pages_prepare(struct vm_area_desc *desc);
 int map_kernel_pages_complete(struct vm_area_struct *vma,
 			      struct mmap_action *action);
 int vm_map_pages(struct vm_area_struct *vma, struct page **pages,
-				unsigned long num);
+		 unsigned long num);
 int vm_map_pages_zero(struct vm_area_struct *vma, struct page **pages,
-				unsigned long num);
+		      unsigned long num);
 vm_fault_t vmf_insert_page_mkwrite(struct vm_fault *vmf, struct page *page,
-			bool write);
+				   bool write);
 vm_fault_t vmf_insert_pfn(struct vm_area_struct *vma, unsigned long addr,
-			unsigned long pfn);
+			  unsigned long pfn);
 vm_fault_t vmf_insert_pfn_prot(struct vm_area_struct *vma, unsigned long addr,
-			unsigned long pfn, pgprot_t pgprot);
+			       unsigned long pfn, pgprot_t pgprot);
 vm_fault_t vmf_insert_mixed(struct vm_area_struct *vma, unsigned long addr,
-			unsigned long pfn);
+			    unsigned long pfn);
 vm_fault_t vmf_insert_mixed_mkwrite(struct vm_area_struct *vma,
-		unsigned long addr, unsigned long pfn);
-int vm_iomap_memory(struct vm_area_struct *vma, phys_addr_t start, unsigned long len);
+				    unsigned long addr, unsigned long pfn);
+int vm_iomap_memory(struct vm_area_struct *vma, phys_addr_t start,
+		    unsigned long len);
 
 static inline vm_fault_t vmf_insert_page(struct vm_area_struct *vma,
-				unsigned long addr, struct page *page)
+					 unsigned long addr, struct page *page)
 {
 	int err = vm_insert_page(vma, addr, page);
 
@@ -4806,7 +4895,7 @@ static inline vm_fault_t vmf_insert_page(struct vm_area_struct *vma,
 
 #ifndef io_remap_pfn_range_pfn
 static inline unsigned long io_remap_pfn_range_pfn(unsigned long pfn,
-		unsigned long size)
+						   unsigned long size)
 {
 	return pfn;
 }
@@ -4902,8 +4991,9 @@ typedef int (*pte_fn_t)(pte_t *pte, unsigned long addr, void *data);
 extern int apply_to_page_range(struct mm_struct *mm, unsigned long address,
 			       unsigned long size, pte_fn_t fn, void *data);
 extern int apply_to_existing_page_range(struct mm_struct *mm,
-				   unsigned long address, unsigned long size,
-				   pte_fn_t fn, void *data);
+					unsigned long address,
+					unsigned long size, pte_fn_t fn,
+					void *data);
 
 #ifdef CONFIG_PAGE_POISONING
 extern void __kernel_poison_pages(struct page *page, int numpages);
@@ -4933,11 +5023,23 @@ static inline void kernel_unpoison_pages(struct page *page, int numpages)
 		__kernel_unpoison_pages(page, numpages);
 }
 #else
-static inline bool page_poisoning_enabled(void) { return false; }
-static inline bool page_poisoning_enabled_static(void) { return false; }
-static inline void __kernel_poison_pages(struct page *page, int nunmpages) { }
-static inline void kernel_poison_pages(struct page *page, int numpages) { }
-static inline void kernel_unpoison_pages(struct page *page, int numpages) { }
+static inline bool page_poisoning_enabled(void)
+{
+	return false;
+}
+static inline bool page_poisoning_enabled_static(void)
+{
+	return false;
+}
+static inline void __kernel_poison_pages(struct page *page, int nunmpages)
+{
+}
+static inline void kernel_poison_pages(struct page *page, int numpages)
+{
+}
+static inline void kernel_unpoison_pages(struct page *page, int numpages)
+{
+}
 #endif
 
 DECLARE_STATIC_KEY_MAYBE(CONFIG_INIT_ON_ALLOC_DEFAULT_ON, init_on_alloc);
@@ -4962,7 +5064,7 @@ DECLARE_STATIC_KEY_FALSE(_debug_pagealloc_enabled);
 static inline bool debug_pagealloc_enabled(void)
 {
 	return IS_ENABLED(CONFIG_DEBUG_PAGEALLOC) &&
-		_debug_pagealloc_enabled_early;
+	       _debug_pagealloc_enabled_early;
 }
 
 /*
@@ -5029,7 +5131,8 @@ static inline bool set_page_guard(struct zone *zone, struct page *page,
 	return __set_page_guard(zone, page, order);
 }
 
-void __clear_page_guard(struct zone *zone, struct page *page, unsigned int order);
+void __clear_page_guard(struct zone *zone, struct page *page,
+			unsigned int order);
 static inline void clear_page_guard(struct zone *zone, struct page *page,
 				    unsigned int order)
 {
@@ -5038,17 +5141,35 @@ static inline void clear_page_guard(struct zone *zone, struct page *page,
 	__clear_page_guard(zone, page, order);
 }
 
-#else	/* CONFIG_DEBUG_PAGEALLOC */
-static inline void debug_pagealloc_map_pages(struct page *page, int numpages) {}
-static inline void debug_pagealloc_unmap_pages(struct page *page, int numpages) {}
-static inline unsigned int debug_guardpage_minorder(void) { return 0; }
-static inline bool debug_guardpage_enabled(void) { return false; }
-static inline bool page_is_guard(const struct page *page) { return false; }
+#else /* CONFIG_DEBUG_PAGEALLOC */
+static inline void debug_pagealloc_map_pages(struct page *page, int numpages)
+{
+}
+static inline void debug_pagealloc_unmap_pages(struct page *page, int numpages)
+{
+}
+static inline unsigned int debug_guardpage_minorder(void)
+{
+	return 0;
+}
+static inline bool debug_guardpage_enabled(void)
+{
+	return false;
+}
+static inline bool page_is_guard(const struct page *page)
+{
+	return false;
+}
 static inline bool set_page_guard(struct zone *zone, struct page *page,
-			unsigned int order) { return false; }
+				  unsigned int order)
+{
+	return false;
+}
 static inline void clear_page_guard(struct zone *zone, struct page *page,
-				unsigned int order) {}
-#endif	/* CONFIG_DEBUG_PAGEALLOC */
+				    unsigned int order)
+{
+}
+#endif /* CONFIG_DEBUG_PAGEALLOC */
 
 #ifndef clear_pages
 /**
@@ -5094,14 +5215,14 @@ static inline void clear_pages(void *addr, unsigned int npages)
  * (See comment above clear_pages() for why preemption latency is a concern
  * here.)
  */
-#define PROCESS_PAGES_NON_PREEMPT_BATCH		(SZ_32M >> PAGE_SHIFT)
+#define PROCESS_PAGES_NON_PREEMPT_BATCH (SZ_32M >> PAGE_SHIFT)
 #else /* !clear_pages */
 /*
  * The architecture does not provide a clear_pages() implementation. Assume
  * that clear_page() -- which clear_pages() will fallback to -- is relatively
  * slow and choose a small value for PROCESS_PAGES_NON_PREEMPT_BATCH.
  */
-#define PROCESS_PAGES_NON_PREEMPT_BATCH		1
+#define PROCESS_PAGES_NON_PREEMPT_BATCH 1
 #endif
 #endif
 
@@ -5114,12 +5235,15 @@ static inline struct vm_area_struct *get_gate_vma(struct mm_struct *mm)
 {
 	return NULL;
 }
-static inline int in_gate_area_no_mm(unsigned long addr) { return 0; }
+static inline int in_gate_area_no_mm(unsigned long addr)
+{
+	return 0;
+}
 static inline int in_gate_area(struct mm_struct *mm, unsigned long addr)
 {
 	return 0;
 }
-#endif	/* __HAVE_ARCH_GATE_AREA */
+#endif /* __HAVE_ARCH_GATE_AREA */
 
 bool process_shares_mm(const struct task_struct *p, const struct mm_struct *mm);
 
@@ -5131,7 +5255,7 @@ void drop_slab(void);
 extern int randomize_va_space;
 #endif
 
-const char * arch_vma_name(struct vm_area_struct *vma);
+const char *arch_vma_name(struct vm_area_struct *vma);
 #ifdef CONFIG_MMU
 void print_vma_addr(char *prefix, unsigned long rip);
 #else
@@ -5141,33 +5265,34 @@ static inline void print_vma_addr(char *prefix, unsigned long rip)
 #endif
 
 unsigned long section_map_size(void);
-struct page * __populate_section_memmap(unsigned long pfn,
-		unsigned long nr_pages, int nid, struct vmem_altmap *altmap,
-		struct dev_pagemap *pgmap);
+struct page *__populate_section_memmap(unsigned long pfn,
+				       unsigned long nr_pages, int nid,
+				       struct vmem_altmap *altmap,
+				       struct dev_pagemap *pgmap);
 void *vmemmap_alloc_block(unsigned long size, int node);
 struct vmem_altmap;
 void *vmemmap_alloc_block_buf(unsigned long size, int node,
 			      struct vmem_altmap *altmap);
 void vmemmap_verify(pte_t *, int, unsigned long, unsigned long);
-void vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
-		     unsigned long addr, unsigned long next);
-int vmemmap_check_pmd(pmd_t *pmd, int node,
-		      unsigned long addr, unsigned long next);
-int vmemmap_populate_basepages(unsigned long start, unsigned long end,
-			       int node, struct vmem_altmap *altmap);
-int vmemmap_populate_hugepages(unsigned long start, unsigned long end,
-			       int node, struct vmem_altmap *altmap);
+void vmemmap_set_pmd(pmd_t *pmd, void *p, int node, unsigned long addr,
+		     unsigned long next);
+int vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
+		      unsigned long next);
+int vmemmap_populate_basepages(unsigned long start, unsigned long end, int node,
+			       struct vmem_altmap *altmap);
+int vmemmap_populate_hugepages(unsigned long start, unsigned long end, int node,
+			       struct vmem_altmap *altmap);
 int vmemmap_populate(unsigned long start, unsigned long end, int node,
-		struct vmem_altmap *altmap);
+		     struct vmem_altmap *altmap);
 int vmemmap_populate_hvo(unsigned long start, unsigned long end,
 			 unsigned int order, struct zone *zone,
 			 unsigned long headsize);
 void vmemmap_wrprotect_hvo(unsigned long start, unsigned long end, int node,
-			  unsigned long headsize);
+			   unsigned long headsize);
 void vmemmap_populate_print_last(void);
 #ifdef CONFIG_MEMORY_HOTPLUG
 void vmemmap_free(unsigned long start, unsigned long end,
-		struct vmem_altmap *altmap);
+		  struct vmem_altmap *altmap);
 #endif
 
 #ifdef CONFIG_SPARSEMEM_VMEMMAP
@@ -5196,7 +5321,7 @@ static inline void vmem_altmap_free(struct vmem_altmap *altmap,
 }
 #endif
 
-#define VMEMMAP_RESERVE_NR	2
+#define VMEMMAP_RESERVE_NR 2
 #ifdef CONFIG_ARCH_WANT_OPTIMIZE_DAX_VMEMMAP
 static inline bool __vmemmap_can_optimize(struct vmem_altmap *altmap,
 					  struct dev_pagemap *pgmap)
@@ -5224,7 +5349,7 @@ static inline bool __vmemmap_can_optimize(struct vmem_altmap *altmap,
 
 #else
 static inline bool vmemmap_can_optimize(struct vmem_altmap *altmap,
-					   struct dev_pagemap *pgmap)
+					struct dev_pagemap *pgmap)
 {
 	return false;
 }
@@ -5299,10 +5424,10 @@ static inline bool arch_is_platform_page(u64 paddr)
  * Error handlers for various types of pages.
  */
 enum mf_result {
-	MF_IGNORED,	/* Error: cannot be handled */
-	MF_FAILED,	/* Error: handling failed */
-	MF_DELAYED,	/* Will be handled later */
-	MF_RECOVERED,	/* Successfully recovered */
+	MF_IGNORED, /* Error: cannot be handled */
+	MF_FAILED, /* Error: handling failed */
+	MF_DELAYED, /* Will be handled later */
+	MF_RECOVERED, /* Successfully recovered */
 };
 
 enum mf_action_page_type {
@@ -5333,18 +5458,18 @@ enum mf_action_page_type {
 #if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_HUGETLBFS)
 void folio_zero_user(struct folio *folio, unsigned long addr_hint);
 int copy_user_large_folio(struct folio *dst, struct folio *src,
-			  unsigned long addr_hint,
-			  struct vm_area_struct *vma);
-long copy_folio_from_user(struct folio *dst_folio,
-			   const void __user *usr_src,
-			   bool allow_pagefault);
+			  unsigned long addr_hint, struct vm_area_struct *vma);
+long copy_folio_from_user(struct folio *dst_folio, const void __user *usr_src,
+			  bool allow_pagefault);
 
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE || CONFIG_HUGETLBFS */
 
 #if MAX_NUMNODES > 1
 void __init setup_nr_node_ids(void);
 #else
-static inline void setup_nr_node_ids(void) {}
+static inline void setup_nr_node_ids(void)
+{
+}
 #endif
 
 extern int memcmp_pages(struct page *page1, struct page *page2);
@@ -5359,8 +5484,7 @@ unsigned long clean_record_shared_mapping_range(struct address_space *mapping,
 						pgoff_t first_index, pgoff_t nr,
 						pgoff_t bitmap_pgoff,
 						unsigned long *bitmap,
-						pgoff_t *start,
-						pgoff_t *end);
+						pgoff_t *start, pgoff_t *end);
 
 unsigned long wp_shared_mapping_range(struct address_space *mapping,
 				      pgoff_t first_index, pgoff_t nr);
@@ -5370,9 +5494,8 @@ unsigned long wp_shared_mapping_range(struct address_space *mapping,
 int set_anon_vma_name(unsigned long addr, unsigned long size,
 		      const char __user *uname);
 #else
-static inline
-int set_anon_vma_name(unsigned long addr, unsigned long size,
-		      const char __user *uname)
+static inline int set_anon_vma_name(unsigned long addr, unsigned long size,
+				    const char __user *uname)
 {
 	return -EINVAL;
 }
@@ -5405,13 +5528,16 @@ static inline bool pfn_is_unaccepted_memory(unsigned long pfn)
 void vma_pgtable_walk_begin(struct vm_area_struct *vma);
 void vma_pgtable_walk_end(struct vm_area_struct *vma);
 
-int reserve_mem_find_by_name(const char *name, phys_addr_t *start, phys_addr_t *size);
+int reserve_mem_find_by_name(const char *name, phys_addr_t *start,
+			     phys_addr_t *size);
 int reserve_mem_release_by_name(const char *name);
 
 #ifdef CONFIG_64BIT
 void mseal_mmap_page_zero(void);
 #else
-static inline void mseal_mmap_page_zero(void) {}
+static inline void mseal_mmap_page_zero(void)
+{
+}
 #endif
 
 /*
@@ -5428,10 +5554,11 @@ static inline bool user_alloc_needs_zeroing(void)
 	 */
 	return cpu_dcache_is_aliasing() || cpu_icache_is_aliasing() ||
 	       !static_branch_maybe(CONFIG_INIT_ON_ALLOC_DEFAULT_ON,
-				   &init_on_alloc);
+				    &init_on_alloc);
 }
 
-int arch_get_shadow_stack_status(struct task_struct *t, unsigned long __user *status);
+int arch_get_shadow_stack_status(struct task_struct *t,
+				 unsigned long __user *status);
 int arch_set_shadow_stack_status(struct task_struct *t, unsigned long status);
 int arch_lock_shadow_stack_status(struct task_struct *t, unsigned long status);
 
@@ -5463,19 +5590,22 @@ int arch_lock_shadow_stack_status(struct task_struct *t, unsigned long status);
 /* PP_SIGNATURE includes POISON_POINTER_DELTA, so limit the size of the DMA
  * index to not overlap with that if set
  */
-#define PP_DMA_INDEX_BITS MIN(32, __ffs(POISON_POINTER_DELTA) - PP_DMA_INDEX_SHIFT)
+#define PP_DMA_INDEX_BITS \
+	MIN(32, __ffs(POISON_POINTER_DELTA) - PP_DMA_INDEX_SHIFT)
 #else
 /* Use the lowest bit of PAGE_OFFSET if there's at least 8 bits available; see above */
 #define PP_DMA_INDEX_MIN_OFFSET (1 << (PP_DMA_INDEX_SHIFT + 8))
-#define PP_DMA_INDEX_BITS ((__builtin_constant_p(PAGE_OFFSET) && \
-			    PAGE_OFFSET >= PP_DMA_INDEX_MIN_OFFSET && \
-			    !(PAGE_OFFSET & (PP_DMA_INDEX_MIN_OFFSET - 1))) ? \
-			      MIN(32, __ffs(PAGE_OFFSET) - PP_DMA_INDEX_SHIFT) : 0)
+#define PP_DMA_INDEX_BITS                                           \
+	((__builtin_constant_p(PAGE_OFFSET) &&                      \
+	  PAGE_OFFSET >= PP_DMA_INDEX_MIN_OFFSET &&                 \
+	  !(PAGE_OFFSET & (PP_DMA_INDEX_MIN_OFFSET - 1))) ?         \
+		       MIN(32, __ffs(PAGE_OFFSET) - PP_DMA_INDEX_SHIFT) : \
+		       0)
 
 #endif
 
-#define PP_DMA_INDEX_MASK GENMASK(PP_DMA_INDEX_BITS + PP_DMA_INDEX_SHIFT - 1, \
-				  PP_DMA_INDEX_SHIFT)
+#define PP_DMA_INDEX_MASK \
+	GENMASK(PP_DMA_INDEX_BITS + PP_DMA_INDEX_SHIFT - 1, PP_DMA_INDEX_SHIFT)
 
 /* Mask used for checking in page_pool_page_is_pp() below. page->pp_magic is
  * OR'ed with PP_SIGNATURE after the allocation in order to preserve bit 0 for
@@ -5499,7 +5629,7 @@ static inline bool page_pool_page_is_pp(const struct page *page)
 
 #define PAGE_SNAPSHOT_FAITHFUL (1 << 0)
 #define PAGE_SNAPSHOT_PG_BUDDY (1 << 1)
-#define PAGE_SNAPSHOT_PG_IDLE  (1 << 2)
+#define PAGE_SNAPSHOT_PG_IDLE (1 << 2)
 
 struct page_snapshot {
 	struct folio folio_snapshot;
@@ -5517,7 +5647,7 @@ static inline bool snapshot_page_is_faithful(const struct page_snapshot *ps)
 void snapshot_page(struct page_snapshot *ps, const struct page *page);
 
 void map_anon_folio_pte_nopf(struct folio *folio, pte_t *pte,
-		struct vm_area_struct *vma, unsigned long addr,
-		bool uffd_wp);
+			     struct vm_area_struct *vma, unsigned long addr,
+			     bool uffd_wp);
 
 #endif /* _LINUX_MM_H */
