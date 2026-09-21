@@ -19,3 +19,13 @@
   конфіг той самий.
   6 files changed, 34 insertions(+), 43 deletions(-)
   Тепер навпаки: 22-га чиста, 11-та бачить ті самі 6 файлів.
+
+- TASK 03 : switch dummy to chromium config
+  Замінив .clang-format на chromium-11.clang-format, прогнав make_format_11.sh.
+  8 files changed, 17800 insertions(+), 18533 deletions(-)
+  Форматер переставив #include - у Chromium увімкнений SortIncludes.
+
+- TASK 03 : switch dummy to chromium config from clang-format 22
+  Замінив .clang-format на chromium-22.clang-format, прогнав make_format_22.sh.
+  3 files changed, 9 insertions(+), 12 deletions(-)
+  Версія 11 після цього не читає конфіг узагалі - вкладені структури.
