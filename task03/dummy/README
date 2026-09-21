@@ -8,3 +8,14 @@
 
 - TASK 03 : add dummy project
   Завантажив файли з ядра, форматування не міняв
+
+- TASK 03 : format dummy with clang-format-11
+  Прогнав make_format_11.sh ./dummy, конфіг з ядра.
+  8 files changed, 3235 insertions(+), 2908 deletions(-)
+  Після цього 11-та версія не бачить проблем, 22-га бачить 6 файлів.
+
+- TASK 03 : format dummy with clang-format-22
+  Прогнав make_format_22.sh ./dummy поверх попереднього результату,
+  конфіг той самий.
+  6 files changed, 34 insertions(+), 43 deletions(-)
+  Тепер навпаки: 22-га чиста, 11-та бачить ті самі 6 файлів.
