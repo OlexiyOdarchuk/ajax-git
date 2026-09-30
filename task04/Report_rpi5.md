@@ -71,3 +71,32 @@ $ readelf -l sysinfo_rpi5 | grep інтерпретатор
 | Динамічний завантажувач | `/lib64/ld-linux-x86-64.so.2` | `/lib/ld-linux-aarch64.so.1` |
 
 Обидва файли мають однаковий формат (ELF64, little endian, PIE) і залежать лише від `libc.so.6`, але машинний код різний, тому `sysinfo_rpi5` запускається тільки на Raspberry Pi 5 (або через емулятор, наприклад `qemu-aarch64`).
+
+# 6. TODO write a ukrainian text
+
+ishawyha@iShawyha-rpi ~/Desktop> ./sysinfo_rpi5
+Інформація про систему:
+
+Ім'я хоста: iShawyha-rpi
+Операційна система: Linux
+Архітектура: aarch64
+Ядро: 6.18.50+rpt-rpi-2712
+Час на системі: Wed Sep 30 17:56:56 2026
+ishawyha@iShawyha-rpi ~/Desktop> ./sysinfo_rpi5 file.txt
+ishawyha@iShawyha-rpi ~/Desktop> ./sysinfo_rpi5 file.txt
+Файл file.txt вже створено, додаю інформацію в кінець файлу
+ishawyha@iShawyha-rpi ~/Desktop> cat file.txt
+Інформація про систему:
+
+Ім'я хоста: iShawyha-rpi
+Операційна система: Linux
+Архітектура: aarch64
+Ядро: 6.18.50+rpt-rpi-2712
+Час на системі: Wed Sep 30 17:57:01 2026
+Інформація про систему:
+
+Ім'я хоста: iShawyha-rpi
+Операційна система: Linux
+Архітектура: aarch64
+Ядро: 6.18.50+rpt-rpi-2712
+Час на системі: Wed Sep 30 17:57:03 2026
