@@ -16,15 +16,6 @@
 
 ```
 
-Тому залежності отримано через `readelf`:
-```text
-$ readelf -d sysinfo_rpi5 | grep NEEDED
- 0x0000000000000001 (NEEDED)             Спільна бібліотека: [libc.so.6]
-
-$ readelf -l sysinfo_rpi5 | grep інтерпретатор
-      [Запитаний інтерпретатор програми: /lib/ld-linux-aarch64.so.1]
-```
-
 ## 3. Заголовок ELF-файлу (readelf -h)
 
 ```text
