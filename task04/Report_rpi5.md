@@ -1,6 +1,7 @@
 # Звіт про аналіз бінарного файлу (Raspberry Pi 5)
 
 ## 1. Розміри секцій пам'яті (size)
+
 ```text
    text	   data	    bss	    dec	    hex	filename
    3559	    712	      8	   4279	   10b7	sysinfo_rpi5
@@ -22,6 +23,7 @@ $ readelf -l sysinfo_rpi5 | grep інтерпретатор
 ```
 
 ## 3. Заголовок ELF-файлу (readelf -h)
+
 ```text
 Заголовок ELF:
   Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
@@ -46,6 +48,7 @@ $ readelf -l sysinfo_rpi5 | grep інтерпретатор
 ```
 
 ## 4. Знайдені текстові рядки (strings)
+
 ```text
   Невідомий час
   Помилка отримання системної інформації
@@ -61,8 +64,9 @@ $ readelf -l sysinfo_rpi5 | grep інтерпретатор
 ```
 
 ## 5. Порівняння з Host
+
 | Параметр | Host (`sysinfo_host`) | Target (`sysinfo_rpi5`) |
-|---|---|---|
+| --- | --- | --- |
 | Архітектура | x86-64 | AArch64 |
 | Точка входу | 0x10f0 | 0x980 |
 | text / data / bss | 3620 / 672 / 16 | 3559 / 712 / 8 |
@@ -70,10 +74,13 @@ $ readelf -l sysinfo_rpi5 | grep інтерпретатор
 | Заголовків секцій | 31 | 30 |
 | Динамічний завантажувач | `/lib64/ld-linux-x86-64.so.2` | `/lib/ld-linux-aarch64.so.1` |
 
-Обидва файли мають однаковий формат (ELF64, little endian, PIE) і залежать лише від `libc.so.6`, але машинний код різний, тому `sysinfo_rpi5` запускається тільки на Raspberry Pi 5 (або через емулятор, наприклад `qemu-aarch64`).
+Обидва файли мають однаковий формат (ELF64, little endian, PIE)
+і залежать лише від `libc.so.6`, але машинний код різний, тому `sysinfo_rpi5`
+запускається тільки на Raspberry Pi 5 (або через емулятор, наприклад `qemu-aarch64`).
 
-# 6. TODO write a ukrainian text
+## 6. Перевірка на працездатність
 
+```text
 ishawyha@iShawyha-rpi ~/Desktop> ./sysinfo_rpi5
 Інформація про систему:
 
@@ -100,3 +107,4 @@ ishawyha@iShawyha-rpi ~/Desktop> cat file.txt
 Архітектура: aarch64
 Ядро: 6.18.50+rpt-rpi-2712
 Час на системі: Wed Sep 30 17:57:03 2026
+```
