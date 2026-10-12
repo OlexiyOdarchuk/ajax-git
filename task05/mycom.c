@@ -8,17 +8,38 @@
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
 #include <termios.h>
+#include <time.h>
 #include <unistd.h>
-#include <signal.h>
 
 #define LINE_MAX_LEN 256
 
 volatile sig_atomic_t g_stop = 0;
+FILE *g_log = NULL;
 
-void on_signal(int sig) {
+void format_time(char *buf, size_t size)
+{
+    time_t now = time(NULL);
+    struct tm tm_now;
+    localtime_r(&now, &tm_now);
+    strftime(buf, size, "%Y-%m-%d %H:%M:%S", &tm_now);
+}
+
+void log_line(const char *text)
+{
+    if (g_log == NULL)
+        return;
+    char ts[32];
+    format_time(ts, sizeof(ts));
+    fprintf(g_log, "[%s] %s\n", ts, text);
+    fflush(g_log);
+}
+
+void on_signal(int sig)
+{
     (void)sig;
     g_stop = 1;
 }
@@ -34,7 +55,8 @@ void swap_case(char *s)
     }
 }
 
-int setup_uart(int fd, speed_t baud, struct termios *saved) {
+int setup_uart(int fd, speed_t baud, struct termios *saved)
+{
     struct termios tio;
 
     if (tcgetattr(fd, saved) != 0) {
@@ -58,61 +80,88 @@ int setup_uart(int fd, speed_t baud, struct termios *saved) {
     return 0;
 }
 
-void run_echo(int fd) {
+void run_echo(int fd)
+{
     char line[LINE_MAX_LEN + 1];
     size_t len = 0;
 
-    while (1) {
+    while (!g_stop) {
         char c;
         ssize_t n = read(fd, &c, 1);
 
         if (n < 0) {
-            if (errno == EINTR) continue;
-            perror("Read error");
+            if (errno == EINTR)
+                continue;
+            log_line("ERROR: Read error from port");
             break;
         }
-        if (n == 0) continue;
+        if (n == 0)
+            continue;
 
         if (c == '\r' || c == '\n') {
-            if (len == 0) continue;
+            if (len == 0)
+                continue;
 
             line[len] = '\0';
 
-            printf("Received: %s\n", line);
+            char log_msg[LINE_MAX_LEN + 32];
+            snprintf(log_msg, sizeof(log_msg), "Received: %s", line);
+            log_line(log_msg);
+            printf("%s\n", log_msg);
 
             swap_case(line);
 
             char reply[LINE_MAX_LEN + 3];
             int reply_len = snprintf(reply, sizeof(reply), "%s\r\n", line);
 
-            write(fd, reply, reply_len);
+            if (write(fd, reply, reply_len) < 0) {
+                log_line("ERROR: Write error to port");
+            }
             len = 0;
         } else if (len < LINE_MAX_LEN) {
             line[len++] = c;
         } else {
+            log_line("WARNING: Line too long, buffer flushed");
             len = 0;
         }
     }
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     struct termios saved_tio;
     struct sigaction sa;
+    char log_filename[64];
+    char start_msg[128];
 
     if (argc < 2) {
-        fprintf(stderr, "To use this, specify the path to the UART port: %s /dev/ttyAMA0\n", argv[0]);
+        fprintf(stderr, "Usage: %s <device>\n", argv[0]);
+        return 1;
+    }
+
+    time_t now = time(NULL);
+    struct tm tm_start;
+    localtime_r(&now, &tm_start);
+    strftime(log_filename, sizeof(log_filename), "%Y%m%d_%H%M%S.log",
+             &tm_start);
+
+    g_log = fopen(log_filename, "a");
+    if (g_log == NULL) {
+        perror("Failed to open log file");
         return 1;
     }
 
     int fd = open(argv[1], O_RDWR | O_NOCTTY);
     if (fd < 0) {
         perror("Failed to open port");
+        fclose(g_log);
         return 1;
     }
 
     if (setup_uart(fd, B115200, &saved_tio) != 0) {
         perror("Failed to configure port");
         close(fd);
+        fclose(g_log);
         return 1;
     }
 
@@ -122,13 +171,18 @@ int main(int argc, char **argv) {
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
 
-    printf("UART Echo server running on %s at 115200 baud. Press Ctrl+C to exit.\n", argv[1]);
+    snprintf(start_msg, sizeof(start_msg), "Started on %s, logging to %s",
+             argv[1], log_filename);
+    printf("%s\n", start_msg);
+    log_line(start_msg);
 
     run_echo(fd);
 
+    log_line("Server stopped gracefully");
     printf("\nRestoring terminal and shutting down...\n");
 
     tcsetattr(fd, TCSANOW, &saved_tio);
     close(fd);
+    fclose(g_log);
     return 0;
 }
