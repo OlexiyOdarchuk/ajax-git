@@ -6,9 +6,21 @@
 #define _DEFAULT_SOURCE
 
 #include <fcntl.h>
+#include <unistd.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <termios.h>
 #include <unistd.h>
+
+void swap_case(char *s) {
+    for (; *s != '\0'; s++) {
+        if (isupper((unsigned char)*s)) {
+            *s = (char)tolower((unsigned char)*s);
+        } else if (islower((unsigned char)*s)) {
+            *s = (char)toupper((unsigned char)*s);
+        }
+    }
+}
 
 int setup_uart(int fd, speed_t baud)
 {
@@ -31,6 +43,10 @@ int setup_uart(int fd, speed_t baud)
 
 int main(int args, char **argv)
 {
+    char test_string[] = "hello world!\n";
+    swap_case(test_string);
+    printf("%s", test_string);
+
     if (args < 2) {
         printf(
             "To use this, specify the path to the UART port: %s /dev/ttyAMA0\n",

@@ -7,7 +7,7 @@ SRC = mycom.c
 all: $(TARGET)
 
 $(TARGET): $(SRC)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -static
 
 clean:
 	rm -f $(TARGET) *.log
