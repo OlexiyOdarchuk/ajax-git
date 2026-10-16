@@ -146,7 +146,8 @@ int main(int argc, char **argv)
     time_t now = time(NULL);
     struct tm tm_start;
     localtime_r(&now, &tm_start);
-    strftime(log_filename, sizeof(log_filename), "%Y%m%d_%H%M%S.log", &tm_start);
+    strftime(log_filename, sizeof(log_filename), "%Y%m%d_%H%M%S.log",
+             &tm_start);
 
     g_log = fopen(log_filename, "a");
     if (g_log == NULL) {
@@ -174,7 +175,8 @@ int main(int argc, char **argv)
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
 
-    snprintf(start_msg, sizeof(start_msg), "Started on %s, logging to %s", argv[1], log_filename);
+    snprintf(start_msg, sizeof(start_msg), "Started on %s, logging to %s",
+             argv[1], log_filename);
     printf("%s\n", start_msg);
     log_line(start_msg);
 
