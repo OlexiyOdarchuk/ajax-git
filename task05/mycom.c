@@ -80,7 +80,7 @@ int setup_uart(int fd, speed_t baud, struct termios *saved)
     return 0;
 }
 
-void run_echo(int fd)
+int run_echo(int fd)
 {
     char line[LINE_MAX_LEN + 1];
     size_t len = 0;
@@ -93,7 +93,7 @@ void run_echo(int fd)
             if (errno == EINTR)
                 continue;
             log_line("ERROR: Read error from port");
-            break;
+            return -1;
         }
         if (n == 0)
             continue;
@@ -125,6 +125,7 @@ void run_echo(int fd)
             len = 0;
         }
     }
+    return 0;
 }
 
 int main(int argc, char **argv)
@@ -133,6 +134,9 @@ int main(int argc, char **argv)
     struct sigaction sa;
     char log_filename[64];
     char start_msg[128];
+    int rc;
+
+    setvbuf(stdout, NULL, _IOLBF, 0);
 
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <device>\n", argv[0]);
@@ -176,13 +180,13 @@ int main(int argc, char **argv)
     printf("%s\n", start_msg);
     log_line(start_msg);
 
-    run_echo(fd);
+    rc = run_echo(fd);
 
-    log_line("Server stopped gracefully");
+    log_line(rc == 0 ? "Server stopped gracefully" : "Server stopped on error");
     printf("\nRestoring terminal and shutting down...\n");
 
     tcsetattr(fd, TCSANOW, &saved_tio);
     close(fd);
     fclose(g_log);
-    return 0;
+    return rc == 0 ? 0 : 1;
 }

@@ -18,4 +18,4 @@ deploy: $(TARGET)
 format:
 	clang-format -i $(SRC)
 
-.PHONY: all clean deploy format
+.PHONY: all clean deploy install format
